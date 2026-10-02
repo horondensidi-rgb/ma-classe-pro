@@ -26,7 +26,8 @@ services:
         # bord), ex: ma-classe-pro.onrender.com
         value: ""
       - key: DATABASE_URL
-        # À remplir avec l'URL de connexion fournie par Neon ou
+        # À remplir avec l'URL de
+ connexion fournie par Neon ou
         # Supabase une fois ta base PostgreSQL créée là-bas (Render
         # ne la devine pas tout seul, il faut la copier-coller).
         sync: false
