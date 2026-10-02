@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block titre %}{{ eleve.nom_complet }} — Ma Classe Pro{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'classes:detail_classe' classe.id %}">← {{ classe.nom }}</a>
+    </p>
+
+    <h2>{{ eleve.nom_complet }}</h2>
+    {% if not eleve.est_actif %}
+        <p class="liste-classes-meta">Élève inactif : retiré de la liste active de la classe.</p>
+    {% endif %}
+
+    <div class="groupe-actions">
+        <a href="{% url 'classes:modifier_eleve' classe.id eleve.id %}" class="bouton-secondaire">Modifier les informations</a>
+
+        <form method="post"
+              action="{% url 'classes:creer_acces_eleve' classe.id eleve.id %}"
+              onsubmit="return confirm('{% if eleve.compte_utilisateur %}Générer un nouveau code d{% else %}Créer l{% endif %}\'accès pour {{ eleve.nom_complet }} ?');">
+            {% csrf_token %}
+            <button type="submit" class="bouton-secondaire">
+                {% if eleve.compte_utilisateur %}Réinitialiser le code d'accès{% else %}Créer l'accès élève{% endif %}
+            </button>
+        </form>
+    </div>
+
+    {% if eleve.compte_utilisateur %}
+        <p class="liste-classes-meta">
+            Accès élève actif — identifiant : <strong>{{ eleve.matricule }}</strong>
+        </p>
+    {% endif %}
+
+    <h3>Informations</h3>
+    <dl class="fiche-info">
+        <dt>Matricule</dt>
+        <dd>{{ eleve.matricule }}</dd>
+
+        <dt>Classe</dt>
+        <dd>{{ classe.nom }} ({{ classe.annee_scolaire.libelle }})</dd>
+
+        <dt>Sexe</dt>
+        <dd>{{ eleve.get_sexe_display }}</dd>
+
+        <dt>Date de naissance</dt>
+        <dd>{{ eleve.date_naissance|date:"d/m/Y"|default:"Non renseignée" }}</dd>
+
+        <dt>Lieu de naissance</dt>
+        <dd>{{ eleve.lieu_naissance|default:"Non renseigné" }}</dd>
+
+        <dt>Parent / tuteur</dt>
+        <dd>{{ eleve.nom_tuteur|default:"Non renseigné" }}</dd>
+
+        <dt>Téléphone du tuteur</dt>
+        <dd>{{ eleve.telephone_tuteur|default:"Non renseigné" }}</dd>
+    </dl>
+
+    <h3>Notes</h3>
+
+    {# Formulaire en méthode GET : les choix apparaissent dans l'URL #}
+    {# (?trimestre=2&mois=11), ce qui permet de partager ou mettre #}
+    {# en favori une vue filtrée, contrairement à un POST. #}
+    <form method="get" class="filtres">
+        <div class="champ">
+            <label for="filtre-trimestre">Trimestre</label>
+            <select name="trimestre" id="filtre-trimestre">
+                <option value="">Tous</option>
+                {% for valeur, libelle in trimestres %}
+                    <option value="{{ valeur }}" {% if trimestre_choisi == valeur|stringformat:"s" %}selected{% endif %}>{{ libelle }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="champ">
+            <label for="filtre-mois">Mois</label>
+            <select name="mois" id="filtre-mois">
+                <option value="">Tous</option>
+                {% for valeur, libelle in mois_liste %}
+                    <option value="{{ valeur }}" {% if mois_choisi == valeur|stringformat:"s" %}selected{% endif %}>{{ libelle }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="bouton">Filtrer</button>
+        {% if trimestre_choisi or mois_choisi %}
+            <a href="{% url 'classes:fiche_eleve' classe.id eleve.id %}">Réinitialiser</a>
+        {% endif %}
+    </form>
+    {% if copies %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Trimestre</th>
+                    <th>Matière</th>
+                    <th>Évaluation</th>
+                    <th>Type</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for copie in copies %}
+                    <tr>
+                        <td data-label="Date">{{ copie.evaluation.date_evaluation|date:"d/m/Y" }}</td>
+                        <td data-label="Trimestre">{{ copie.evaluation.get_trimestre_display }}</td>
+                        <td data-label="Matière">{{ copie.evaluation.classe_matiere.matiere.nom }}</td>
+                        <td data-label="Évaluation">{{ copie.evaluation.titre }}</td>
+                        <td data-label="Type">{{ copie.evaluation.get_type_evaluation_display }}</td>
+                        <td data-label="Note">{{ copie.note_obtenue }} / {{ copie.evaluation.bareme_total }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune note trouvée{% if trimestre_choisi or mois_choisi %} pour ce filtre{% endif %}.</p>
+    {% endif %}
+</div>
+{% endblock %}

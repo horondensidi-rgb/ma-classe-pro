@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block titre %}Mot de passe oublié{% endblock %}
+
+{% block contenu %}
+<div class="ecran-auth">
+    <div class="ecran-auth-panneau">
+        <h1>Mot de passe oublié ?</h1>
+        <p>Saisis l'adresse e-mail de ton compte. Si elle existe, tu recevras un lien pour choisir un nouveau mot de passe.</p>
+    </div>
+
+    <div class="ecran-auth-formulaire">
+        <form method="post">
+            {% csrf_token %}
+
+            {% for champ in form %}
+                <div class="champ">
+                    <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                    {{ champ }}
+                    {% for erreur in champ.errors %}
+                        <div class="champ-erreur">{{ erreur }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="bouton">Envoyer le lien</button>
+        </form>
+
+        <p class="lien-secondaire">
+            <a href="{% url 'comptes:connexion' %}">Retour à la connexion</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block titre %}{{ evaluation.titre }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>{{ evaluation.titre }}</h2>
+    <p class="liste-classes-meta">
+        {{ evaluation.classe_matiere.matiere.nom }}
+        {% if evaluation.date_limite %}· à rendre avant le {{ evaluation.date_limite|date:"d/m/Y H:i" }}{% endif %}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for question in questions %}
+            <div class="carte-etape">
+                <h4>Question {{ question.numero_ordre }} <span class="liste-classes-meta">({{ question.points }} pt{{ question.points|pluralize }})</span></h4>
+                <p>{{ question.enonce }}</p>
+
+                {% if question.type_question == 'QCM' %}
+                    {% with reponse_actuelle=reponses_existantes|dictsort:"question_id" %}{% endwith %}
+                    {% for choix in question.choix.all %}
+                        <label style="display:block; margin-bottom: 0.4rem;">
+                            <input
+                                type="radio"
+                                name="question_{{ question.id }}"
+                                value="{{ choix.id }}"
+                                {% if reponses_existantes|default_if_none:'' %}{% endif %}
+                            >
+                            {{ choix.texte }}
+                        </label>
+                    {% endfor %}
+                {% else %}
+                    <div class="champ">
+                        <textarea name="question_{{ question.id }}" rows="3"></textarea>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">Envoyer mes réponses</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

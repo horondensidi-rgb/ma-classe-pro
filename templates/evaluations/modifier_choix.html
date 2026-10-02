@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block titre %}Choix de réponse{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'evaluations:liste_questions' question.evaluation.id %}">← {{ question.evaluation.titre }}</a>
+    </p>
+
+    <h2>Choix de réponse</h2>
+    <p class="liste-classes-meta">{{ question.enonce }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        {% for choix_form in formset %}
+            <div class="carte-etape">
+                {% for champ_cache in choix_form.hidden_fields %}{{ champ_cache }}{% endfor %}
+
+                <div class="champ">
+                    <label for="{{ choix_form.texte.id_for_label }}">Proposition</label>
+                    {{ choix_form.texte }}
+                </div>
+
+                <label>
+                    {{ choix_form.est_correct }}
+                    Bonne réponse
+                </label>
+
+                {% if choix_form.instance.pk and formset.can_delete %}
+                    <label class="liste-classes-meta">
+                        {{ choix_form.DELETE }} Supprimer cette proposition
+                    </label>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">Enregistrer les choix</button>
+            <a href="{% url 'evaluations:liste_questions' question.evaluation.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

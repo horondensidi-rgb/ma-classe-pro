@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block titre %}Nouveau mot de passe{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Choisir un nouveau mot de passe</h2>
+
+    {% if validlink %}
+        {# validlink : variable fournie automatiquement par Django,  #}
+        {# True si le lien (jeton + identifiant) est valide et pas   #}
+        {# expiré. False : on affiche un message d'erreur à la place #}
+        {# du formulaire, plutôt que de laisser quelqu'un réutiliser #}
+        {# un lien déjà utilisé ou périmé.                            #}
+        <form method="post">
+            {% csrf_token %}
+
+            {% for champ in form %}
+                <div class="champ">
+                    <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                    {{ champ }}
+                    {% if champ.help_text %}<small>{{ champ.help_text }}</small>{% endif %}
+                    {% for erreur in champ.errors %}
+                        <div class="champ-erreur">{{ erreur }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="bouton">Valider le nouveau mot de passe</button>
+        </form>
+    {% else %}
+        <p class="champ-erreur">
+            Ce lien de réinitialisation n'est plus valide (déjà utilisé, ou expiré).
+        </p>
+        <a href="{% url 'comptes:mot_de_passe_oublie' %}" class="bouton-secondaire">Demander un nouveau lien</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block titre %}Déroulement — {{ fiche.titre }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'pedagogie:detail_fiche' fiche.id %}">← {{ fiche.titre }}</a>
+    </p>
+
+    <h2>Déroulement de la fiche</h2>
+    <p class="liste-classes-meta">
+        {{ fiche.get_type_lecon_display }} — {{ nombre_attendu }} étapes attendues selon la méthodologie officielle
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        {% for etape_form in formset %}
+            <div class="carte-etape">
+                {% if etape_form.instance.pk %}
+                    <p class="liste-classes-meta">Étape existante</p>
+                {% endif %}
+
+                {% for champ_cache in etape_form.hidden_fields %}{{ champ_cache }}{% endfor %}
+
+                {% for champ in etape_form.visible_fields %}
+                    <div class="champ">
+                        <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                        {{ champ }}
+                        {% for erreur in champ.errors %}
+                            <div class="champ-erreur">{{ erreur }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">Enregistrer le déroulement</button>
+            <a href="{% url 'pedagogie:detail_fiche' fiche.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block titre %}Ajouter un élève — {{ classe.nom }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Ajouter un élève à {{ classe.nom }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for champ in form %}
+            <div class="champ">
+                <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                {{ champ }}
+                {% for erreur in champ.errors %}
+                    <div class="champ-erreur">{{ erreur }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">Enregistrer</button>
+            <a href="{% url 'classes:detail_classe' classe.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

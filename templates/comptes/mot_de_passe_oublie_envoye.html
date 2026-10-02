@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block titre %}E-mail envoyé{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Vérifie ta boîte e-mail</h2>
+    <p>
+        Si un compte existe avec cette adresse, un e-mail contenant un lien
+        de réinitialisation vient de t'être envoyé. Le lien reste valable
+        quelques heures seulement.
+    </p>
+    <p class="liste-classes-meta">
+        Rien reçu ? Vérifie aussi le dossier spam, ou
+        <a href="{% url 'comptes:mot_de_passe_oublie' %}">réessaie</a>.
+    </p>
+</div>
+{% endblock %}

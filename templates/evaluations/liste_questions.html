@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block titre %}Questions — {{ evaluation.titre }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'evaluations:liste_evaluations' evaluation.classe_matiere.id %}">← {{ evaluation.classe_matiere.matiere.nom }}</a>
+    </p>
+
+    <h2>{{ evaluation.titre }}</h2>
+    <p class="liste-classes-meta">Questions de cette évaluation</p>
+
+    <a href="{% url 'evaluations:creer_question' evaluation.id %}" class="bouton">+ Nouvelle question</a>
+
+    {% if questions %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Énoncé</th>
+                    <th>Type</th>
+                    <th>Points</th>
+                    <th>Choix</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question in questions %}
+                    <tr>
+                        <td data-label="#">{{ question.numero_ordre }}</td>
+                        <td data-label="Énoncé">{{ question.enonce|truncatewords:12 }}</td>
+                        <td data-label="Type">{{ question.get_type_question_display }}</td>
+                        <td data-label="Points">{{ question.points }}</td>
+                        <td data-label="Choix">{{ question.choix.count }}</td>
+                        <td class="cellule-actions">
+                            <div class="groupe-actions">
+                                {% if question.type_question == 'QCM' %}
+                                    <a href="{% url 'evaluations:modifier_choix' question.id %}" class="bouton-secondaire bouton-petit">Choix</a>
+                                {% endif %}
+                                <a href="{% url 'evaluations:modifier_question' question.id %}" class="bouton-secondaire bouton-petit">Modifier</a>
+                                <form method="post"
+                                      action="{% url 'evaluations:supprimer_question' question.id %}"
+                                      onsubmit="return confirm('Supprimer cette question ?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bouton-danger bouton-petit">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune question pour cette évaluation pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block titre %}Connexion élève — Ma Classe Pro{% endblock %}
+
+{% block contenu %}
+<div class="ecran-auth">
+
+    <div class="ecran-auth-panneau">
+        <h1>Espace élève</h1>
+        <p>
+            Connecte-toi avec le matricule et le code fournis par ton
+            enseignant pour accéder à tes évaluations en ligne.
+        </p>
+    </div>
+
+    <div class="ecran-auth-formulaire">
+        <h2>Connexion élève</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="champ-erreur">
+                    {% for erreur in form.non_field_errors %}
+                        <p>{{ erreur }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="champ">
+                <label for="{{ form.username.id_for_label }}">Matricule</label>
+                {{ form.username }}
+            </div>
+
+            <div class="champ">
+                <label for="{{ form.password.id_for_label }}">Code d'accès</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="bouton">Se connecter</button>
+        </form>
+
+        <p class="lien-secondaire">
+            Code oublié ? Demande à ton enseignant de t'en générer un nouveau.
+        </p>
+        <p class="lien-secondaire">
+            <a href="{% url 'comptes:connexion' %}">Espace enseignant</a>
+        </p>
+    </div>
+
+</div>
+{% endblock %}

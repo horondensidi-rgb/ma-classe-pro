@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block titre %}Créer un compte — Ma Classe Pro{% endblock %}
+
+{% block contenu %}
+<div class="ecran-auth">
+
+    <div class="ecran-auth-panneau">
+        <h1>Votre classe, organisée dès aujourd'hui.</h1>
+        <p>
+            Créez votre compte enseignant en quelques instants.
+            Le plan Gratuit vous permet de démarrer avec une classe,
+            sans engagement.
+        </p>
+    </div>
+
+    <div class="ecran-auth-formulaire">
+        <h2>Créer un compte</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {# On boucle sur TOUS les champs du formulaire plutôt que #}
+            {# de les écrire un par un à la main : si demain on ajoute #}
+            {# un champ dans forms.py, il apparaît ici automatiquement, #}
+            {# sans avoir à modifier ce template. #}
+            {% for champ in form %}
+                <div class="champ">
+                    <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                    {{ champ }}
+                    {% if champ.help_text %}
+                        <small>{{ champ.help_text }}</small>
+                    {% endif %}
+                    {% for erreur in champ.errors %}
+                        <div class="champ-erreur">{{ erreur }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="bouton">Créer mon compte</button>
+        </form>
+
+        <p class="lien-secondaire">
+            Déjà inscrit ?
+            <a href="{% url 'comptes:connexion' %}">Se connecter</a>
+        </p>
+    </div>
+
+</div>
+{% endblock %}

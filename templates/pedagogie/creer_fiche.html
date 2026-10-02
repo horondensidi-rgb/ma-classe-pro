@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block titre %}{% if fiche %}Modifier{% else %}Nouvelle fiche{% endif %} — {{ classe_matiere.matiere.nom }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'pedagogie:liste_fiches' classe_matiere.id %}">← {{ classe_matiere.matiere.nom }}</a>
+    </p>
+
+    <h2>{% if fiche %}Modifier la fiche{% else %}Nouvelle fiche de préparation{% endif %}</h2>
+    <p class="liste-classes-meta">{{ classe_matiere.matiere.nom }} — {{ classe_matiere.classe.nom }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for champ in form %}
+            <div class="champ">
+                <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                {{ champ }}
+                {% if champ.help_text %}<small>{{ champ.help_text }}</small>{% endif %}
+                {% for erreur in champ.errors %}
+                    <div class="champ-erreur">{{ erreur }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">
+                {% if fiche %}Enregistrer{% else %}Continuer vers le déroulement{% endif %}
+            </button>
+            <a href="{% url 'pedagogie:liste_fiches' classe_matiere.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

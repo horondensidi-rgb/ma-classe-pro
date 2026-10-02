@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block titre %}Changer mon mot de passe{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Changer mon mot de passe</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for champ in form %}
+            <div class="champ">
+                <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                {{ champ }}
+                {% if champ.help_text %}<small>{{ champ.help_text }}</small>{% endif %}
+                {% for erreur in champ.errors %}
+                    <div class="champ-erreur">{{ erreur }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="bouton">Mettre à jour le mot de passe</button>
+    </form>
+</div>
+{% endblock %}

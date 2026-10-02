@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block titre %}Bulletin — {{ eleve.nom_complet }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'bulletins:liste_classe' classe.id bulletin.trimestre %}">← Classement {{ classe.nom }}</a>
+    </p>
+
+    <h2>{{ eleve.nom_complet }}</h2>
+    <p class="liste-classes-meta">
+        {{ classe.nom }} · {{ trimestre_libelle }} · {{ classe.annee_scolaire.libelle }}
+    </p>
+
+    <a href="{% url 'bulletins:telecharger_pdf' classe.id eleve.id bulletin.trimestre %}" class="bouton">
+        Télécharger le PDF
+    </a>
+
+    {% if lignes %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Matière</th>
+                    <th>Note de classe</th>
+                    <th>Composition</th>
+                    <th>Moyenne</th>
+                    <th>Coef.</th>
+                    <th>Moyenne coéf.</th>
+                    <th>Rang</th>
+                    <th>Appréciation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in lignes %}
+                    <tr>
+                        <td data-label="Matière">{{ ligne.classe_matiere.matiere.nom }}</td>
+                        <td data-label="Note de classe">
+                            {{ ligne.moyenne_devoirs|default:"—" }}
+                            {% if ligne.nombre_devoirs_comptes %}
+                                <span class="liste-classes-meta">({{ ligne.nombre_devoirs_comptes }})</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Composition">
+                            {{ ligne.moyenne_composition|default:"—" }}
+                            {% if ligne.nombre_compositions_comptees %}
+                                <span class="liste-classes-meta">({{ ligne.nombre_compositions_comptees }})</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Moyenne">{{ ligne.moyenne|default:"—" }}</td>
+                        <td data-label="Coefficient">{{ ligne.classe_matiere.coefficient }}</td>
+                        <td data-label="Moyenne coéfficiée"><strong>{{ ligne.moyenne_coefficiee|default:"—" }}</strong></td>
+                        <td data-label="Rang">{{ ligne.rang_matiere|default:"—" }}</td>
+                        <td data-label="Appréciation">{{ ligne.appreciation|default:"—" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="liste-classes-meta">
+            Les chiffres entre parenthèses indiquent le nombre d'évaluations prises en compte
+            (utile pour vérifier qu'aucune composition mensuelle n'a été oubliée).
+        </p>
+
+        <dl class="fiche-info">
+            <dt>Moyenne générale</dt>
+            <dd><strong>{{ bulletin.moyenne_generale|default:"—" }} / 20</strong></dd>
+
+            <dt>Rang</dt>
+            <dd>
+                {{ bulletin.rang|default:"—" }}
+                {% if bulletin.effectif_classe %}sur {{ bulletin.effectif_classe }}{% endif %}
+            </dd>
+        </dl>
+    {% else %}
+        <p>Aucune ligne de bulletin pour ce trimestre.</p>
+    {% endif %}
+</div>
+{% endblock %}

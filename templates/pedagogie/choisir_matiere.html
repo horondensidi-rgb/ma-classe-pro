@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block titre %}Nouvelle fiche — choisir la matière{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Pour quelle matière ?</h2>
+    <p class="liste-classes-meta">
+        Choisis la classe et la matière concernées par cette nouvelle fiche.
+    </p>
+
+    {% if classes_matieres %}
+        <ul class="liste-classes">
+            {% for cm in classes_matieres %}
+                <li>
+                    <a href="{% url 'pedagogie:creer_fiche' cm.id %}">
+                        {{ cm.matiere.nom }} — {{ cm.classe.nom }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>
+            Tu n'enseignes encore aucune matière dans aucune classe.
+            Demande à l'administrateur de t'attribuer une matière avant de créer une fiche.
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

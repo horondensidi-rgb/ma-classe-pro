@@ -1,0 +1,22 @@
+# Environnement virtuel
+venv/
+env/
+*/venvs/
+
+# Fichiers compilés Python
+__pycache__/
+*.pyc
+
+# Secrets : ne JAMAIS envoyer ce fichier sur GitHub
+.env
+
+# Base de données locale (SQLite) : ne concerne QUE le développement,
+# jamais les vraies données une fois déployé sur PostgreSQL.
+db.sqlite3
+
+# Fichiers statiques rassemblés par collectstatic (régénérés à
+# chaque déploiement, inutile de les versionner)
+staticfiles/
+
+# Fichiers spécifiques à Termux/Android, parfois créés automatiquement
+.termux/

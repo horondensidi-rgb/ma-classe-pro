@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block titre %}Résultat — {{ evaluation.titre }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'evaluations:eleve_tableau_bord' %}">← Mes évaluations</a>
+    </p>
+
+    <h2>{{ evaluation.titre }}</h2>
+    <p class="liste-classes-meta">{{ evaluation.classe_matiere.matiere.nom }}</p>
+
+    {% if copie.statut == 'CORRIGE' %}
+        <p style="font-size:1.3rem;">
+            <strong>{{ copie.note_obtenue }} / {{ evaluation.bareme_total }}</strong>
+        </p>
+        {% if copie.commentaire_enseignant %}
+            <p>{{ copie.commentaire_enseignant }}</p>
+        {% endif %}
+    {% else %}
+        <p>
+            Réponses envoyées. Une partie de cette évaluation doit encore
+            être corrigée par l'enseignant — reviens plus tard pour voir ta note.
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

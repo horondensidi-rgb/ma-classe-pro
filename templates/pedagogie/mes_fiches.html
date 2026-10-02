@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block titre %}Mes fiches de préparation{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Mes fiches de préparation</h2>
+
+    <a href="{% url 'pedagogie:choisir_matiere' %}" class="bouton">+ Nouvelle fiche</a>
+
+    {% if fiches %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Date prévue</th>
+                    <th>Classe</th>
+                    <th>Matière</th>
+                    <th>Titre</th>
+                    <th>Statut</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fiche in fiches %}
+                    <tr>
+                        <td data-label="Date prévue">{{ fiche.date_prevue|date:"d/m/Y"|default:"Non planifiée" }}</td>
+                        <td data-label="Classe">{{ fiche.classe_matiere.classe.nom }}</td>
+                        <td data-label="Matière">{{ fiche.classe_matiere.matiere.nom }}</td>
+                        <td data-label="Titre">{{ fiche.titre }}</td>
+                        <td data-label="Statut">{{ fiche.get_statut_display }}</td>
+                        <td class="cellule-actions">
+                            <a href="{% url 'pedagogie:detail_fiche' fiche.id %}" class="bouton-secondaire bouton-petit">
+                                Voir
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune fiche de préparation pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block titre %}Classement — {{ classe.nom }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'classes:detail_classe' classe.id %}">← {{ classe.nom }}</a>
+    </p>
+
+    <h2>Classement — {{ trimestre_libelle }}</h2>
+
+    <div class="groupe-actions">
+        {% for valeur, libelle in trimestres_disponibles %}
+            <a href="{% url 'bulletins:liste_classe' classe.id valeur %}"
+               class="{% if valeur == trimestre %}bouton bouton-petit{% else %}bouton-secondaire bouton-petit{% endif %}">
+                {{ libelle }}
+            </a>
+        {% endfor %}
+        <a href="{% url 'bulletins:generer' classe.id %}" class="bouton-secondaire bouton-petit">
+            Recalculer
+        </a>
+    </div>
+
+    {% if bulletins %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Moyenne</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bulletin in bulletins %}
+                    <tr>
+                        <td data-label="Rang">{{ bulletin.rang|default:"—" }}{% if bulletin.effectif_classe %}<span class="liste-classes-meta"> / {{ bulletin.effectif_classe }}</span>{% endif %}</td>
+                        <td data-label="Prénom">{{ bulletin.eleve.prenom }}</td>
+                        <td data-label="Nom">{{ bulletin.eleve.nom }}</td>
+                        <td data-label="Moyenne">{{ bulletin.moyenne_generale|default:"—" }}</td>
+                        <td class="cellule-actions">
+                            <a href="{% url 'bulletins:detail_eleve' classe.id bulletin.eleve.id trimestre %}" class="bouton-secondaire bouton-petit">
+                                Voir le bulletin
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>
+            Aucun bulletin généré pour ce trimestre.
+            <a href="{% url 'bulletins:generer' classe.id %}">Générer maintenant</a>.
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

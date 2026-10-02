@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block titre %}Mes classes — Ma Classe Pro{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Mes classes</h2>
+
+    {% if classes %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Niveau</th>
+                    <th>Année scolaire</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for classe in classes %}
+                    <tr>
+                        <td data-label="Classe">{{ classe.nom }}</td>
+                        <td data-label="Niveau">{{ classe.get_niveau_display }}</td>
+                        <td data-label="Année scolaire">{{ classe.annee_scolaire.libelle }}</td>
+                        <td class="cellule-actions">
+                            <a href="{% url 'classes:detail_classe' classe.id %}" class="bouton-secondaire bouton-petit">Ouvrir</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune classe pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

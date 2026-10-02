@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block titre %}Fiches de préparation — {{ classe_matiere.matiere.nom }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>{{ classe_matiere.matiere.nom }}</h2>
+    <p class="liste-classes-meta">{{ classe_matiere.classe.nom }}</p>
+
+    <a href="{% url 'pedagogie:creer_fiche' classe_matiere.id %}" class="bouton">
+        + Nouvelle fiche
+    </a>
+
+    {% if fiches %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Date prévue</th>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Statut</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fiche in fiches %}
+                    <tr>
+                        <td data-label="Date prévue">{{ fiche.date_prevue|date:"d/m/Y"|default:"—" }}</td>
+                        <td data-label="Titre">{{ fiche.titre }}</td>
+                        <td data-label="Type">{{ fiche.get_type_lecon_display }}</td>
+                        <td data-label="Statut">{{ fiche.get_statut_display }}</td>
+                        <td class="cellule-actions">
+                            <div class="groupe-actions">
+                                <a href="{% url 'pedagogie:detail_fiche' fiche.id %}" class="bouton-secondaire bouton-petit">
+                                    Voir
+                                </a>
+                                <form method="post"
+                                      action="{% url 'pedagogie:supprimer_fiche' fiche.id %}"
+                                      onsubmit="return confirm('Supprimer définitivement « {{ fiche.titre }} » ?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bouton-danger bouton-petit">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune fiche de préparation pour cette matière pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

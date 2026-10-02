@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block titre %}Générer les bulletins — {{ classe.nom }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'classes:detail_classe' classe.id %}">← {{ classe.nom }}</a>
+    </p>
+
+    <h2>Générer les bulletins</h2>
+    <p class="liste-classes-meta">
+        Calcule (ou recalcule) la note de classe, la note de composition
+        et la moyenne de chaque élève, matière par matière, puis établit
+        le classement de la classe pour le trimestre choisi.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="champ">
+            <label for="trimestre">Trimestre</label>
+            <select name="trimestre" id="trimestre">
+                {% for valeur, libelle in trimestres %}
+                    <option value="{{ valeur }}">{{ libelle }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">Générer les bulletins</button>
+            <a href="{% url 'classes:detail_classe' classe.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

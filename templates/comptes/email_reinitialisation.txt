@@ -1,0 +1,11 @@
+Bonjour {{ user.first_name }},
+
+Tu as demandé la réinitialisation de ton mot de passe sur Ma Classe Pro.
+
+Clique sur ce lien pour choisir un nouveau mot de passe (valable quelques heures) :
+{{ protocol }}://{{ domain }}{% url 'comptes:reinitialiser_mot_de_passe' uidb64=uid token=token %}
+
+Si tu n'es pas à l'origine de cette demande, ignore simplement cet e-mail :
+ton mot de passe actuel reste inchangé.
+
+— Ma Classe Pro

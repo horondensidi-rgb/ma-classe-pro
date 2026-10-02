@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block titre %}Mes évaluations{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Bonjour, {{ eleve.prenom }}</h2>
+    <p class="liste-classes-meta">{{ eleve.classe.nom }}</p>
+
+    {% if lignes %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Matière</th>
+                    <th>Évaluation</th>
+                    <th>Date limite</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in lignes %}
+                    <tr>
+                        <td data-label="Matière">{{ ligne.evaluation.classe_matiere.matiere.nom }}</td>
+                        <td data-label="Évaluation">{{ ligne.evaluation.titre }}</td>
+                        <td data-label="Date limite">{{ ligne.evaluation.date_limite|date:"d/m/Y H:i"|default:"—" }}</td>
+                        <td class="cellule-actions">
+                            {% if ligne.deja_repondu %}
+                                <a href="{% url 'evaluations:eleve_resultat' ligne.evaluation.id %}" class="bouton-secondaire bouton-petit">
+                                    Voir le résultat
+                                </a>
+                            {% else %}
+                                <a href="{% url 'evaluations:eleve_repondre' ligne.evaluation.id %}" class="bouton bouton-petit">
+                                    Répondre
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune évaluation en ligne ouverte pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

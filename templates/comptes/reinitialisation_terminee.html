@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block titre %}Mot de passe réinitialisé{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Mot de passe réinitialisé</h2>
+    <p>Tu peux maintenant te connecter avec ton nouveau mot de passe.</p>
+    <a href="{% url 'comptes:connexion' %}" class="bouton">Se connecter</a>
+</div>
+{% endblock %}

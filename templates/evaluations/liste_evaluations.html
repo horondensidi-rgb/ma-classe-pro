@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block titre %}Évaluations — {{ classe_matiere.matiere.nom }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>{{ classe_matiere.matiere.nom }}</h2>
+    <p class="liste-classes-meta">{{ classe_matiere.classe.nom }}</p>
+
+    <a href="{% url 'evaluations:creer_evaluation' classe_matiere.id %}" class="bouton">
+        + Nouvelle évaluation
+    </a>
+
+    {% if evaluations %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Trimestre</th>
+                    <th>Coefficient</th>
+                    <th>Statut</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for evaluation in evaluations %}
+                    <tr>
+                        <td data-label="Date">{{ evaluation.date_evaluation|date:"d/m/Y" }}</td>
+                        <td data-label="Titre">{{ evaluation.titre }}</td>
+                        <td data-label="Type">{{ evaluation.get_type_evaluation_display }}</td>
+                        <td data-label="Trimestre">{{ evaluation.get_trimestre_display }}</td>
+                        <td data-label="Coefficient">{{ evaluation.coefficient }}</td>
+                        <td data-label="Statut">{{ evaluation.get_statut_display }}</td>
+                        <td class="cellule-actions">
+                            <div class="groupe-actions">
+                                {% if evaluation.est_en_ligne %}
+                                    <form method="post" action="{% url 'evaluations:publier_evaluation' evaluation.id %}">
+                                        {% csrf_token %}
+                                        {% if evaluation.statut == 'PUBLIEE' %}
+                                            <button type="submit" class="bouton-succes bouton-petit">✓ Publiée</button>
+                                        {% else %}
+                                            <button type="submit" class="bouton bouton-petit">Publier</button>
+                                        {% endif %}
+                                    </form>
+                                {% endif %}
+                                <a href="{% url 'evaluations:saisir_notes' evaluation.id %}" class="bouton-secondaire bouton-petit">
+                                    Notes
+                                </a>
+                                <a href="{% url 'evaluations:liste_questions' evaluation.id %}" class="bouton-secondaire bouton-petit">
+                                    Questions
+                                </a>
+                                <a href="{% url 'evaluations:modifier_evaluation' evaluation.id %}" class="bouton-secondaire bouton-petit">
+                                    Modifier
+                                </a>
+                                <form method="post"
+                                      action="{% url 'evaluations:supprimer_evaluation' evaluation.id %}"
+                                      onsubmit="return confirm('Supprimer définitivement « {{ evaluation.titre }} » ?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bouton-danger bouton-petit">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune évaluation pour cette matière pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

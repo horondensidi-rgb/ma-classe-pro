@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block titre %}{{ fiche.titre }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'pedagogie:liste_fiches' fiche.classe_matiere.id %}">← {{ fiche.classe_matiere.matiere.nom }}</a>
+    </p>
+
+    <h2>{{ fiche.titre }}</h2>
+
+    <div class="groupe-actions">
+        <a href="{% url 'pedagogie:modifier_fiche' fiche.id %}" class="bouton-secondaire bouton-petit">Modifier les infos</a>
+        <a href="{% url 'pedagogie:modifier_etapes' fiche.id %}" class="bouton-secondaire bouton-petit">Modifier le déroulement</a>
+    </div>
+
+    <dl class="fiche-info">
+        <dt>Discipline</dt>
+        <dd>{{ fiche.classe_matiere.matiere.nom }} — {{ fiche.get_type_lecon_display }}</dd>
+
+        <dt>Classe</dt>
+        <dd>{{ fiche.classe_matiere.classe.nom }}</dd>
+
+        <dt>Durée prévue</dt>
+        <dd>{{ fiche.duree_minutes }} minutes</dd>
+
+        <dt>Date prévue</dt>
+        <dd>{{ fiche.date_prevue|date:"d/m/Y"|default:"Non planifiée" }}</dd>
+
+        <dt>Statut</dt>
+        <dd>{{ fiche.get_statut_display }}</dd>
+
+        <dt>R.L.P.</dt>
+        <dd>{{ fiche.rappel_lecon_precedente|default:"—"|linebreaksbr }}</dd>
+
+        <dt>O.P.O.</dt>
+        <dd>{{ fiche.objectif_pedagogique_operationnel|linebreaksbr }}</dd>
+    </dl>
+
+    <h3>Déroulement</h3>
+
+    {% if etapes %}
+        {% for etape in etapes %}
+            <div class="carte-etape">
+                <h4>Étape {{ etape.numero_ordre }} — {{ etape.titre_etape }}{% if etape.duree_minutes %} <span class="liste-classes-meta">({{ etape.duree_minutes }} min)</span>{% endif %}</h4>
+                <dl class="fiche-info">
+                    <dt>Activité du maître</dt>
+                    <dd>{{ etape.activite_maitre|default:"—"|linebreaksbr }}</dd>
+
+                    <dt>Activité de l'élève</dt>
+                    <dd>{{ etape.activite_eleve|default:"—"|linebreaksbr }}</dd>
+                </dl>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>
+            Aucune étape saisie.
+            <a href="{% url 'pedagogie:modifier_etapes' fiche.id %}">Compléter le déroulement</a>.
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

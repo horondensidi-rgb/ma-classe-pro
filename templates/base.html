@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titre %}Ma Classe Pro{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'comptes/css/style.css' %}">
+</head>
+<body>
+
+    <header class="entete">
+        {% if user.profil_eleve %}
+            <a href="{% url 'evaluations:eleve_tableau_bord' %}" class="entete-marque">Ma Classe Pro</a>
+        {% else %}
+            <a href="{% url 'comptes:tableau_bord' %}" class="entete-marque">Ma Classe Pro</a>
+        {% endif %}
+        {# user.profil_eleve / user.profil_enseignant : si la relation    #}
+        {# n'existe pas pour cet utilisateur, Django templates renvoient  #}
+        {# silencieusement une valeur "fausse" plutôt qu'une erreur — pas #}
+        {# besoin de try/except ici, contrairement au code Python.       #}
+
+        <nav class="entete-nav">
+            {% if user.is_authenticated %}
+                <span class="entete-utilisateur">{{ user.first_name|default:user.username }}</span>
+                <a href="{% url 'comptes:changer_mot_de_passe' %}">Mot de passe</a>
+                <!--
+                    Le formulaire ci-dessous sert uniquement à la
+                    déconnexion : depuis Django 5, LogoutView refuse
+                    les requêtes GET (un simple lien <a> ne suffit
+                    plus), il faut un vrai POST avec jeton CSRF.
+                -->
+                <form method="post" action="{% url 'comptes:deconnexion' %}" class="entete-deconnexion">
+                    {% csrf_token %}
+                    <button type="submit">Se déconnecter</button>
+                </form>
+            {% else %}
+                <a href="{% url 'comptes:connexion' %}">Se connecter</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div class="contenu">
+                {% for message in messages %}
+                    <p class="message-flash">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block contenu %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>

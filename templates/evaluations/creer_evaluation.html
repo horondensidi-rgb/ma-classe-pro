@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block titre %}Nouvelle évaluation{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Nouvelle évaluation</h2>
+    <p class="liste-classes-meta">
+        {{ classe_matiere.matiere.nom }} — {{ classe_matiere.classe.nom }}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for champ in form %}
+            <div class="champ">
+                <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                {{ champ }}
+                {% for erreur in champ.errors %}
+                    <div class="champ-erreur">{{ erreur }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">Créer l'évaluation</button>
+            <a href="{% url 'evaluations:liste_evaluations' classe_matiere.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

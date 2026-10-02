@@ -1,0 +1,555 @@
+/* ============================================================
+   Fichier : static/comptes/css/style.css
+   Palette et mise en page de Ma Classe Pro.
+
+   Choix délibérés (à ne pas changer sans raison) :
+   - Pas de dégradés ni d'ombres portées génériques.
+   - Polices système uniquement (pas de police chargée depuis
+     internet) : l'app doit rester utilisable même en connexion
+     faible ou hors-ligne, conformément au projet PWA prévu.
+   - Coins presque droits (radius minime), pour un rendu "document
+     officiel" plutôt que "carte d'application".
+   - Mobile-first : les règles de base ciblent le téléphone (le
+     terminal principal de l'enseignant), et les media queries
+     AJOUTENT de la mise en page pour les écrans plus larges
+     (tablette, PC) — jamais l'inverse.
+   ============================================================ */
+
+:root {
+    /* --- Couleurs de base --- */
+    --couleur-fond: #FBF8F2;           /* papier chaud, pas blanc pur */
+    --couleur-encre: #25313D;          /* texte principal, bleu-ardoise profond */
+    --couleur-encre-douce: #56626C;    /* texte secondaire */
+    --couleur-accent: #B6742B;         /* ocre, rappelle les tampons/cachets officiels */
+    --couleur-accent-fonce: #8F5A1F;
+    --couleur-validation: #3F6C51;     /* vert profond, discret, pour les confirmations */
+    --couleur-validation-fonce: #305640;
+    --couleur-erreur: #A23B2E;         /* rouge brique, pas un rouge criard */
+    --couleur-erreur-fonce: #832F24;
+    --couleur-trait: #D8CFC0;          /* hairlines / séparateurs */
+    --couleur-panneau: #22303D;        /* panneau latéral sombre (identité de marque) */
+    --couleur-panneau-texte: #EDE7DA;
+
+    /* --- Typographie --- */
+    --police-titres: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --police-texte: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* --- Échelle d'espacement --- */
+    --espace-xs: 0.5rem;
+    --espace-sm: 1rem;
+    --espace-md: 1.75rem;
+    --espace-lg: 3rem;
+
+    --rayon: 4px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    /* Empêche le zoom-arrière brutal de Chrome mobile quand une
+       page est un peu plus large que l'écran (ex: un tableau non
+       encore adapté) : on préfère un défilement horizontal doux. */
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: var(--police-texte);
+    color: var(--couleur-encre);
+    background: var(--couleur-fond);
+    line-height: 1.5;
+}
+
+h1, h2, h3 {
+    font-family: var(--police-titres);
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0 0 var(--espace-sm) 0;
+}
+
+/* --- En-tête (barre du haut, visible sur toutes les pages) --- */
+.entete {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--espace-xs);
+    padding: var(--espace-xs) var(--espace-sm);
+    border-bottom: 1px solid var(--couleur-trait);
+}
+
+@media (min-width: 640px) {
+    .entete {
+        padding: var(--espace-sm) var(--espace-md);
+    }
+}
+
+.entete-marque {
+    font-family: var(--police-titres);
+    font-size: 1.1rem;
+    color: var(--couleur-encre);
+    text-decoration: none;
+}
+
+@media (min-width: 640px) {
+    .entete-marque {
+        font-size: 1.25rem;
+    }
+}
+
+.entete-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-sm);
+}
+
+.entete-utilisateur {
+    color: var(--couleur-encre-douce);
+    font-size: 0.85rem;
+}
+
+.entete-nav a {
+    color: var(--couleur-encre);
+    text-decoration: none;
+    border-bottom: 1px solid var(--couleur-accent);
+}
+
+/* ============================================================
+   BOUTONS
+   Trois familles, reconnaissables au premier coup d'œil :
+   - .bouton            action principale (ocre plein)
+   - .bouton-secondaire action neutre (contour, "Modifier")
+   - .bouton-danger     action destructive (rouge plein, "Supprimer")
+   - .bouton-succes     action positive (vert plein, "Réactiver")
+   Ajouter .bouton-petit sur n'importe laquelle pour la variante
+   compacte utilisée dans les lignes de tableau.
+   ============================================================ */
+.bouton,
+.bouton-secondaire,
+.bouton-danger,
+.bouton-succes,
+.entete-deconnexion button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1.5px solid transparent;
+    padding: 0.65rem 1.3rem;
+    border-radius: var(--rayon);
+    font-size: 0.95rem;
+    font-family: var(--police-texte);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    white-space: nowrap;
+}
+
+.bouton:active,
+.bouton-secondaire:active,
+.bouton-danger:active,
+.bouton-succes:active {
+    transform: translateY(1px);
+}
+
+/* Action principale : ocre plein */
+.bouton,
+.entete-deconnexion button {
+    background: var(--couleur-accent);
+    border-color: var(--couleur-accent);
+    color: #FFFFFF;
+}
+
+.bouton:hover,
+.entete-deconnexion button:hover {
+    background: var(--couleur-accent-fonce);
+    border-color: var(--couleur-accent-fonce);
+}
+
+/* Action neutre : contour ardoise, fond transparent */
+.bouton-secondaire {
+    background: transparent;
+    border-color: var(--couleur-trait);
+    color: var(--couleur-encre);
+}
+
+.bouton-secondaire:hover {
+    border-color: var(--couleur-encre);
+    background: #F1ECE1;
+}
+
+/* Action destructive : rouge brique plein */
+.bouton-danger {
+    background: var(--couleur-erreur);
+    border-color: var(--couleur-erreur);
+    color: #FFFFFF;
+}
+
+.bouton-danger:hover {
+    background: var(--couleur-erreur-fonce);
+    border-color: var(--couleur-erreur-fonce);
+}
+
+/* Action positive : vert plein (ex: réactiver un élève) */
+.bouton-succes {
+    background: var(--couleur-validation);
+    border-color: var(--couleur-validation);
+    color: #FFFFFF;
+}
+
+.bouton-succes:hover {
+    background: var(--couleur-validation-fonce);
+    border-color: var(--couleur-validation-fonce);
+}
+
+/* Variante compacte pour les actions dans une ligne de tableau */
+.bouton-petit {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.82rem;
+}
+
+/* Regroupe plusieurs boutons d'action (ex: Modifier + Supprimer)
+   avec un espacement propre, et permet un retour à la ligne sur
+   très petit écran plutôt que de faire déborder la page. */
+.groupe-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Un <form> avec un seul bouton (ex: suppression) ne doit pas se
+   comporter comme un bloc pleine largeur au milieu des autres
+   boutons : on l'aligne en ligne avec eux. */
+.groupe-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+/* --- Mise en page "registre" en deux colonnes pour l'auth --- */
+.ecran-auth {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 65px);
+}
+
+@media (min-width: 900px) {
+    .ecran-auth {
+        grid-template-columns: 5fr 7fr;
+    }
+}
+
+.ecran-auth-panneau {
+    background: var(--couleur-panneau);
+    color: var(--couleur-panneau-texte);
+    padding: var(--espace-lg) var(--espace-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ecran-auth-panneau h1 {
+    color: #FFFFFF;
+    font-size: 1.6rem;
+    max-width: 20ch;
+}
+
+@media (min-width: 640px) {
+    .ecran-auth-panneau h1 {
+        font-size: 2rem;
+    }
+}
+
+.ecran-auth-panneau p {
+    color: var(--couleur-panneau-texte);
+    max-width: 42ch;
+}
+
+.ecran-auth-formulaire {
+    padding: var(--espace-lg) var(--espace-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ecran-auth-formulaire form {
+    max-width: 420px;
+    width: 100%;
+}
+
+/* --- Champs de formulaire --- */
+.champ {
+    margin-bottom: var(--espace-sm);
+}
+
+.champ label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--couleur-encre-douce);
+    margin-bottom: 0.3rem;
+}
+
+.champ input,
+.champ select {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--couleur-trait);
+    border-radius: var(--rayon);
+    font-size: 1rem;
+    background: #FFFFFF;
+    color: var(--couleur-encre);
+}
+
+.champ input:focus,
+.champ select:focus {
+    outline: 2px solid var(--couleur-accent);
+    outline-offset: 1px;
+}
+
+.champ-erreur {
+    color: var(--couleur-erreur);
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+.lien-secondaire {
+    margin-top: var(--espace-md);
+    font-size: 0.9rem;
+    color: var(--couleur-encre-douce);
+}
+
+.lien-secondaire a {
+    color: var(--couleur-accent);
+}
+
+/* --- Contenu général (pages après connexion) --- */
+.contenu {
+    padding: var(--espace-sm);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+    .contenu {
+        padding: var(--espace-md);
+    }
+}
+
+.message-flash {
+    background: #EAF1EC;
+    border-left: 3px solid var(--couleur-validation);
+    padding: var(--espace-xs) var(--espace-sm);
+    color: var(--couleur-validation);
+}
+
+/* --- Listes et tableaux (classes, élèves) --- */
+.liste-classes {
+    list-style: none;
+    padding: 0;
+}
+
+.liste-classes li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.3rem;
+    padding: var(--espace-xs) 0;
+    border-bottom: 1px solid var(--couleur-trait);
+}
+
+.liste-classes li a {
+    color: var(--couleur-encre);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.liste-classes-meta {
+    color: var(--couleur-encre-douce);
+    font-size: 0.85rem;
+}
+
+/* ============================================================
+   TABLEAUX RESPONSIVES
+   Sur écran large (tablette/PC), un tableau classique.
+   Sur téléphone (< 640px), chaque LIGNE devient une petite carte
+   empilée : plus besoin de faire défiler horizontalement pour
+   lire un devoir ou une note. Ça exige que chaque <td> porte un
+   attribut data-label="..." reprenant le texte de son en-tête
+   (déjà fait dans les templates) : c'est ce texte que la carte
+   affiche comme étiquette, via la propriété CSS content.
+   ============================================================ */
+.tableau {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--espace-sm) 0 var(--espace-md) 0;
+}
+
+.tableau th {
+    text-align: left;
+    font-size: 0.85rem;
+    color: var(--couleur-encre-douce);
+    font-weight: 600;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--couleur-trait);
+}
+
+.tableau td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--couleur-trait);
+}
+
+.tableau tbody tr:hover {
+    background: #F1ECE1;
+}
+
+@media (max-width: 640px) {
+    .tableau thead {
+        /* On masque l'en-tête plutôt que de la supprimer : elle
+           reste lisible par les lecteurs d'écran (accessibilité),
+           juste invisible à l'affichage. */
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+    }
+
+    .tableau, .tableau tbody, .tableau tr, .tableau td {
+        display: block;
+        width: 100%;
+    }
+
+    .tableau tr {
+        margin-bottom: var(--espace-sm);
+        border: 1px solid var(--couleur-trait);
+        border-radius: var(--rayon);
+        padding: 0.4rem 0.6rem;
+        background: #FFFFFF;
+    }
+
+    .tableau tbody tr:hover {
+        background: #FFFFFF;
+    }
+
+    .tableau td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--espace-sm);
+        text-align: right;
+        border-bottom: 1px dashed var(--couleur-trait);
+        padding: 0.5rem 0;
+    }
+
+    .tableau td:last-child {
+        border-bottom: none;
+    }
+
+    .tableau td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: var(--couleur-encre-douce);
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    /* Une cellule d'actions (boutons) n'a pas besoin d'étiquette
+       répétée ni de justification en deux colonnes : elle occupe
+       toute la largeur de la carte. */
+    .tableau td.cellule-actions {
+        justify-content: flex-start;
+    }
+
+    .tableau td.cellule-actions::before {
+        content: none;
+    }
+}
+
+.champ-note {
+    width: 4.5rem;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--couleur-trait);
+    border-radius: var(--rayon);
+    text-align: center;
+    font-size: 1rem;
+}
+
+.champ-note:focus {
+    outline: 2px solid var(--couleur-accent);
+    outline-offset: 1px;
+}
+
+.ligne-inactive {
+    color: var(--couleur-encre-douce);
+    background: #F4F1E9;
+}
+
+/* --- Fiche élève : liste de définitions en deux colonnes --- */
+.fiche-info {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem var(--espace-md);
+    margin: var(--espace-sm) 0 var(--espace-md) 0;
+}
+
+@media (min-width: 640px) {
+    .fiche-info {
+        grid-template-columns: 12rem 1fr;
+    }
+}
+
+.fiche-info dt {
+    color: var(--couleur-encre-douce);
+    font-size: 0.9rem;
+}
+
+.fiche-info dd {
+    margin: 0;
+}
+
+/* --- Barre de filtres (fiche élève) --- */
+.filtres {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--espace-sm);
+    margin: var(--espace-sm) 0;
+}
+
+.filtres .champ {
+    margin-bottom: 0;
+    min-width: 9rem;
+    flex: 1 1 9rem;
+}
+
+/* ============================================================
+   LARGES ÉCRANS (tablette / PC) : on donne un peu plus d'air
+   au contenu principal, sans jamais dépasser une largeur de
+   lecture confortable.
+   ============================================================ */
+@media (min-width: 1024px) {
+    .contenu {
+        max-width: 1000px;
+    }
+}
+
+/* --- Cartes d'étape (formset et affichage d'une fiche) --- */
+.carte-etape {
+    border: 1px solid var(--couleur-trait);
+    border-radius: var(--rayon);
+    padding: var(--espace-sm);
+    margin-bottom: var(--espace-sm);
+    background: #FFFFFF;
+}
+
+.carte-etape h4 {
+    margin: 0 0 var(--espace-xs) 0;
+    font-family: var(--police-texte);
+    font-size: 1rem;
+    color: var(--couleur-accent-fonce);
+}

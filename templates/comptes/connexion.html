@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block titre %}Connexion — Ma Classe Pro{% endblock %}
+
+{% block contenu %}
+<div class="ecran-auth">
+
+    <div class="ecran-auth-panneau">
+        <h1>Préparez vos cours. Suivez vos classes. Gagnez du temps.</h1>
+        <p>
+            Ma Classe Pro accompagne les enseignants maliens dans la
+            préparation des fiches, la gestion des évaluations et
+            l'édition des bulletins, selon la méthodologie officielle.
+        </p>
+    </div>
+
+    <div class="ecran-auth-formulaire">
+        <h2>Connexion</h2>
+
+        {# form vient automatiquement de la LoginView de Django #}
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="champ-erreur">
+                    {% for erreur in form.non_field_errors %}
+                        <p>{{ erreur }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="champ">
+                <label for="{{ form.username.id_for_label }}">Nom d'utilisateur</label>
+                {{ form.username }}
+            </div>
+
+            <div class="champ">
+                <label for="{{ form.password.id_for_label }}">Mot de passe</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="bouton">Se connecter</button>
+        </form>
+
+        <p class="lien-secondaire">
+            <a href="{% url 'comptes:mot_de_passe_oublie' %}">Mot de passe oublié ?</a>
+        </p>
+        <p class="lien-secondaire">
+            Pas encore de compte ?
+            <a href="{% url 'comptes:inscription' %}">Créer un compte enseignant</a>
+        </p>
+    </div>
+
+</div>
+{% endblock %}

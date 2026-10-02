@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block titre %}{% if question %}Modifier la question{% else %}Nouvelle question{% endif %}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'evaluations:liste_questions' evaluation.id %}">← {{ evaluation.titre }}</a>
+    </p>
+
+    <h2>{% if question %}Modifier la question{% else %}Nouvelle question{% endif %}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for champ in form %}
+            <div class="champ">
+                <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                {{ champ }}
+                {% for erreur in champ.errors %}
+                    <div class="champ-erreur">{{ erreur }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">
+                {% if question %}Enregistrer{% else %}Continuer{% endif %}
+            </button>
+            <a href="{% url 'evaluations:liste_questions' evaluation.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

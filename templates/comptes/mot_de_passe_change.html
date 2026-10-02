@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block titre %}Mot de passe mis à jour{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Mot de passe mis à jour</h2>
+    <p>Ton mot de passe a bien été changé.</p>
+    <a href="{% url 'comptes:tableau_bord' %}" class="bouton">Retour au tableau de bord</a>
+</div>
+{% endblock %}

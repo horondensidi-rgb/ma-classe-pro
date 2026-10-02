@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block titre %}Saisie des notes — {{ evaluation.titre }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'evaluations:liste_evaluations' evaluation.classe_matiere.id %}">← {{ evaluation.classe_matiere.matiere.nom }}</a>
+    </p>
+
+    <h2>{{ evaluation.titre }}</h2>
+    <p class="liste-classes-meta">
+        {{ evaluation.classe_matiere.matiere.nom }} — {{ evaluation.classe_matiere.classe.nom }}
+        · Barème : /{{ evaluation.bareme_total }}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Note (/{{ evaluation.bareme_total }})</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in lignes %}
+                    <tr>
+                        <td data-label="Matricule">{{ ligne.eleve.matricule }}</td>
+                        <td data-label="Prénom">{{ ligne.eleve.prenom }}</td>
+                        <td data-label="Nom">{{ ligne.eleve.nom }}</td>
+                        <td data-label="Note">
+                            <input
+                                type="text"
+                                inputmode="decimal"
+                                name="note_{{ ligne.eleve.id }}"
+                                value="{% if ligne.note_actuelle is not None %}{{ ligne.note_actuelle }}{% endif %}"
+                                class="champ-note"
+                                placeholder="—"
+                            >
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">Enregistrer les notes</button>
+            <a href="{% url 'evaluations:liste_evaluations' evaluation.classe_matiere.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

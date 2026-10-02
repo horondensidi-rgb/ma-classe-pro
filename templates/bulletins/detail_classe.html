@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block titre %}{{ classe.nom }} — Ma Classe Pro{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>{{ classe.nom }}</h2>
+    <p class="liste-classes-meta">
+        {{ classe.get_niveau_display }} · {{ classe.annee_scolaire.libelle }}
+    </p>
+
+    <h3>Matières enseignées</h3>
+    {% if matieres %}
+        <ul>
+            {% for cm in matieres %}
+                <li>
+                    {{ cm.matiere.nom }}
+                    — coefficient {{ cm.coefficient }}
+                    ({{ cm.enseignant.user.get_full_name }})
+                    <a href="{% url 'evaluations:liste_evaluations' cm.id %}">Évaluations</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune matière encore rattachée à cette classe.</p>
+    {% endif %}
+
+    <h3>Élèves actifs ({{ eleves_actifs|length }})</h3>
+
+    <div class="groupe-actions">
+        <a href="{% url 'classes:ajouter_eleve' classe.id %}" class="bouton">+ Ajouter un élève</a>
+        <a href="{% url 'bulletins:generer' classe.id %}" class="bouton-secondaire">Bulletins</a>
+    </div>
+
+    {# method="get" : la recherche apparaît dans l'URL (?q=...), #}
+    {# donc rechargeable, partageable, et compatible avec le bouton #}
+    {# "Précédent" du navigateur — contrairement à un POST. #}
+    <form method="get" class="filtres">
+        <div class="champ">
+            <label for="recherche-eleve">Rechercher un élève</label>
+            <input
+                type="text"
+                id="recherche-eleve"
+                name="q"
+                value="{{ recherche }}"
+                placeholder="Matricule, prénom ou nom..."
+            >
+        </div>
+        <button type="submit" class="bouton-secondaire">Rechercher</button>
+        {% if recherche %}
+            <a href="{% url 'classes:detail_classe' classe.id %}" class="bouton-secondaire">Réinitialiser</a>
+        {% endif %}
+    </form>
+
+    {% if eleves_actifs %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Sexe</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eleve in eleves_actifs %}
+                    <tr>
+                        <td data-label="Matricule">{{ eleve.matricule }}</td>
+                        <td data-label="Prénom"><a href="{% url 'classes:fiche_eleve' classe.id eleve.id %}">{{ eleve.prenom }}</a></td>
+                        <td data-label="Nom">{{ eleve.nom }}</td>
+                        <td data-label="Sexe">{{ eleve.get_sexe_display }}</td>
+                        <td class="cellule-actions">
+                            <div class="groupe-actions">
+                                <a href="{% url 'classes:modifier_eleve' classe.id eleve.id %}" class="bouton-secondaire bouton-petit">Modifier</a>
+                                <form method="post"
+                                      action="{% url 'classes:desactiver_eleve' classe.id eleve.id %}"
+                                      onsubmit="return confirm('Retirer {{ eleve.nom_complet }} de la liste des élèves actifs ?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bouton-danger bouton-petit">Retirer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif recherche %}
+        <p>Aucun élève actif ne correspond à « {{ recherche }} ».</p>
+    {% else %}
+        <p>Aucun élève actif pour le moment.</p>
+    {% endif %}
+
+    {% if eleves_inactifs %}
+        <h3>Élèves inactifs ({{ eleves_inactifs|length }})</h3>
+        <p class="liste-classes-meta">
+            Élèves retirés de la classe : leur historique (notes, bulletins) reste conservé.
+        </p>
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eleve in eleves_inactifs %}
+                    <tr class="ligne-inactive">
+                        <td data-label="Matricule">{{ eleve.matricule }}</td>
+                        <td data-label="Prénom"><a href="{% url 'classes:fiche_eleve' classe.id eleve.id %}">{{ eleve.prenom }}</a></td>
+                        <td data-label="Nom">{{ eleve.nom }}</td>
+                        <td class="cellule-actions">
+                            <form method="post"
+                                  action="{% url 'classes:reactiver_eleve' classe.id eleve.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="bouton-succes bouton-petit">Réactiver</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

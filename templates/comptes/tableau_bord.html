@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block titre %}Tableau de bord — Ma Classe Pro{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Bonjour, {{ user.first_name }}</h2>
+
+    {% if classes %}
+        <p>Vous intervenez dans {{ classes|length }} classe(s) :</p>
+
+        <ul class="liste-classes">
+            {% for classe in classes %}
+                <li>
+                    <a href="{% url 'classes:detail_classe' classe.id %}">
+                        {{ classe.nom }}
+                    </a>
+                    <span class="liste-classes-meta">{{ classe.annee_scolaire.libelle }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>
+            Vous n'êtes rattaché à aucune classe pour le moment.
+            Contactez votre administrateur ou créez-en une depuis l'admin.
+        </p>
+    {% endif %}
+
+    <h3>Prochaines fiches de préparation</h3>
+
+    {% if prochaines_fiches %}
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Date prévue</th>
+                    <th>Classe</th>
+                    <th>Matière</th>
+                    <th>Titre</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fiche in prochaines_fiches %}
+                    <tr>
+                        <td data-label="Date prévue">{{ fiche.date_prevue|date:"d/m/Y"|default:"Non planifiée" }}</td>
+                        <td data-label="Classe">{{ fiche.classe_matiere.classe.nom }}</td>
+                        <td data-label="Matière">{{ fiche.classe_matiere.matiere.nom }}</td>
+                        <td data-label="Titre">{{ fiche.titre }}</td>
+                        <td class="cellule-actions">
+                            <a href="{% url 'pedagogie:detail_fiche' fiche.id %}" class="bouton-secondaire bouton-petit">Voir</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune fiche à venir pour le moment.</p>
+    {% endif %}
+
+    <a href="{% url 'pedagogie:mes_fiches' %}" class="bouton-secondaire">Voir toutes mes fiches</a>
+</div>
+{% endblock %}
