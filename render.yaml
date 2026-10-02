@@ -1,11 +1,3 @@
-# Fichier de configuration Render ("Blueprint") : Render le détecte
-# automatiquement et propose de créer le service web EN UN CLIC
-# depuis ton dépôt GitHub, sans tout remplir manuellement dans
-# l'interface. Si tu préfères tout configurer à la main dans le
-# tableau de bord Render, ce fichier n'est pas obligatoire — mais il
-# évite des erreurs de copier-coller dans les champs "Build Command"
-# et "Start Command".
-
 services:
   - type: web
     name: ma-classe-pro
@@ -16,26 +8,18 @@ services:
     envVars:
       - key: SECRET_KEY
         generateValue: true
-        # generateValue: true -> Render génère lui-même une clé secrète
-        # aléatoire et forte, tu n'as pas besoin d'en fournir une.
+
       - key: DEBUG
         value: "False"
+
       - key: ALLOWED_HOSTS
-        # À compléter avec le domaine exact que Render t'attribuera
-        # après la création du service (visible dans son tableau de
-        # bord), ex: ma-classe-pro.onrender.com
         value: ""
+
       - key: DATABASE_URL
-        # À remplir avec l'URL de
- connexion fournie par Neon ou
-        # Supabase une fois ta base PostgreSQL créée là-bas (Render
-        # ne la devine pas tout seul, il faut la copier-coller).
-        sync: false
-      - key: EMAIL_HOST
-        sync: false
-      - key: EMAIL_PORT
-        value: "587"
-      - key: EMAIL_HOST_USER
-        sync: false
-      - key: EMAIL_HOST_PASSWORD
-        sync: false
+        fromDatabase:
+          name: ma-classe-pro-db
+          property: connectionString
+
+databases:
+  - name: ma-classe-pro-db
+    plan: free
