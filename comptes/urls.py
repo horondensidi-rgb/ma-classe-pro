@@ -15,6 +15,7 @@ app_name = 'comptes'
 # "connexion" un jour.
 
 urlpatterns = [
+    path('', views.accueil_view, name='accueil'),
     path('inscription/', views.inscription_view, name='inscription'),
 
     path(
