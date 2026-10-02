@@ -165,3 +165,7 @@ def tableau_bord_view(request):
         'classes': classes,
         'prochaines_fiches': prochaines_fiches,
     })
+	
+	
+def accueil_view(request):
+    return render(request, 'comptes/accueil.html')

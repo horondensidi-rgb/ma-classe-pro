@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block titre %}Ma Classe Pro — Gestion scolaire{% endblock %}
+
+{% block contenu %}
+
+<section class="accueil-hero">
+    <div class="accueil-hero-contenu">    <p class="accueil-sur-titre">OUTIL DE GESTION SCOLAIRE</p>
+
+    <h1>Ma Classe Pro</h1>
+
+    <p class="accueil-introduction">
+        Une plateforme pensée pour simplifier le travail quotidien
+        des enseignants et faciliter le suivi pédagogique des élèves.
+    </p>
+
+    <div class="accueil-actions">
+        <a href="{% url 'comptes:connexion' %}" class="bouton">
+            Se connecter
+        </a>
+
+        <a href="{% url 'comptes:eleve_connexion' %}" class="bouton-secondaire">
+            Espace élève
+        </a>
+    </div>
+
+    <p class="accueil-inscription">
+        Vous êtes enseignant et vous n'avez pas encore de compte ?
+        <a href="{% url 'comptes:inscription' %}">
+            Créer un compte
+        </a>
+    </p>
+
+</div>
+
+</section><section class="accueil-presentation"><div class="accueil-section-titre">
+    <p class="accueil-sur-titre">UNE GESTION PLUS SIMPLE</p>
+
+    <h2>
+        Tout ce dont vous avez besoin pour organiser votre classe.
+    </h2>
+
+    <p>
+        Ma Classe Pro rassemble dans un même espace les principaux
+        outils nécessaires au suivi pédagogique et à l'organisation
+        du travail de l'enseignant.
+    </p>
+</div>
+
+
+<div class="accueil-fonctionnalites">
+
+    <article class="accueil-fonctionnalite">
+        <span class="accueil-numero">01</span>
+
+        <h3>Mes classes</h3>
+
+        <p>
+            Organisez vos classes et retrouvez rapidement les élèves
+            dont vous assurez le suivi.
+        </p>
+    </article>
+
+
+    <article class="accueil-fonctionnalite">
+        <span class="accueil-numero">02</span>
+
+        <h3>Évaluations</h3>
+
+        <p>
+            Saisissez et consultez les évaluations afin de suivre
+            progressivement les résultats de vos élèves.
+        </p>
+    </article>
+
+
+    <article class="accueil-fonctionnalite">
+        <span class="accueil-numero">03</span>
+
+        <h3>Bulletins</h3>
+
+        <p>
+            Centralisez les résultats scolaires et préparez plus
+            facilement les bulletins de vos élèves.
+        </p>
+    </article>
+
+
+    <article class="accueil-fonctionnalite">
+        <span class="accueil-numero">04</span>
+
+        <h3>Préparations</h3>
+
+        <p>
+            Organisez vos fiches de préparation et gardez une vision
+            claire de vos activités pédagogiques à venir.
+        </p>
+    </article>
+
+</div>
+
+</section><section class="accueil-cta"><div>
+    <p class="accueil-sur-titre">COMMENCER</p>
+
+    <h2>
+        Votre classe, votre travail, un seul espace.
+    </h2>
+
+    <p>
+        Connectez-vous pour accéder à votre espace de travail.
+    </p>
+</div>
+
+<a href="{% url 'comptes:connexion' %}" class="bouton">
+    Accéder à mon espace
+</a>
+
+</section><footer class="accueil-pied"><p>
+    Ma Classe Pro
+</p>
+
+<p>
+    Outil numérique de gestion et de suivi pédagogique.
+</p>
+
+</footer>{% endblock %}
