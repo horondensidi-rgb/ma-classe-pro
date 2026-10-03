@@ -35,6 +35,13 @@ class Command(BaseCommand):
         user.set_password(password)
         user.save()
 
+        self.stdout.write(
+            f"VERIFICATION ADMIN : username={user.username}, "
+            f"is_staff={user.is_staff}, "
+            f"is_superuser={user.is_superuser}, "
+            f"is_active={user.is_active}"
+        )
+
         if created:
             self.stdout.write(
                 self.style.SUCCESS(
