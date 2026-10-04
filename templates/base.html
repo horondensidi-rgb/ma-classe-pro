@@ -13,7 +13,7 @@
         {% if user.profil_eleve %}
             <a href="{% url 'evaluations:eleve_tableau_bord' %}" class="entete-marque">TeachMali</a>
         {% else %}				
-            <a href="{% url 'comptes:tableau_bord' %}" class="entete-marque">Ma Classe Pro</a>
+            <a href="{% url 'comptes:tableau_bord' %}" class="entete-marque">TeachMali</a>
         {% endif %}
         {# user.profil_eleve / user.profil_enseignant : si la relation    #}
         {# n'existe pas pour cet utilisateur, Django templates renvoient  #}
