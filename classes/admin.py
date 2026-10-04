@@ -1,5 +1,5 @@
 # ============================================================
-# APP : classes
+# APP : classes NEW 4/10 22H 28
 # Fichier : admin.py
 # Rôle : rendre AnneeScolaire, Matiere, Classe, ClasseMatiere
 #        et Eleve gérables depuis l'admin, avec search_fields
@@ -10,7 +10,7 @@
 # ============================================================
 
 from django.contrib import admin
-from .models import AnneeScolaire, Matiere, Classe, ClasseMatiere, Eleve
+from .models import AnneeScolaire, Matiere, Classe, ClasseMatiere, Eleve, JournalConsultation
 
 
 # ------------------------------------------------------------
@@ -125,3 +125,45 @@ class EleveAdmin(admin.ModelAdmin):
         nombre = queryset.update(est_actif=True)
         self.message_user(request, f"{nombre} élève(s) réactivé(s).")
     action_reactiver.short_description = "Réactiver les élèves sélectionnés"
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        """
+        On surcharge cette méthode (fournie par Django, appelée à
+        chaque fois que l'admin OUVRE la fiche d'un objet, qu'il la
+        modifie ou non) pour y glisser une ligne de journal — c'est
+        le point d'entrée précis qui correspond à "un humain a
+        regardé les données de cet élève dans l'admin".
+        """
+        eleve = Eleve.objects.filter(pk=object_id).first()
+        if eleve:
+            JournalConsultation.objects.create(
+                utilisateur=request.user,
+                eleve=eleve,
+                origine='ADMIN',
+            )
+        return super().change_view(request, object_id, form_url, extra_context)
+
+
+# ------------------------------------------------------------
+# JOURNAL DE CONSULTATION (lecture seule — c'est un audit, pas une
+# donnée qu'on doit pouvoir modifier ou supprimer au coup par coup)
+# ------------------------------------------------------------
+@admin.register(JournalConsultation)
+class JournalConsultationAdmin(admin.ModelAdmin):
+    list_display = ['date_consultation', 'utilisateur', 'eleve', 'origine']
+    list_filter = ['origine', 'date_consultation']
+    search_fields = ['eleve__matricule', 'eleve__nom', 'eleve__prenom', 'utilisateur__username']
+    date_hierarchy = 'date_consultation'
+
+    def has_add_permission(self, request):
+        # Une consultation ne se "crée" jamais à la main : elle est
+        # TOUJOURS générée automatiquement par le code lui-même.
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        # Un journal d'audit qu'on pourrait modifier après coup ne
+        # prouve plus rien — il doit rester intouchable une fois écrit.
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

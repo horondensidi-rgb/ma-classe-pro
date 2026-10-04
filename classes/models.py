@@ -1,5 +1,5 @@
 # ============================================================
-# APP : classes
+# APP : classes. NEW 4/10 22H 28
 # Fichier : models.py
 # Rôle : gérer les années scolaires, les classes, les matières
 #        et les élèves de chaque enseignant.
@@ -321,3 +321,69 @@ class Eleve(models.Model):
         Pratique pour un raccourci utilisé souvent dans les templates.
         """
         return f"{self.nom} {self.prenom}"
+
+
+# ------------------------------------------------------------
+# 6. JOURNAL DE CONSULTATION (audit)
+# ------------------------------------------------------------
+class JournalConsultation(models.Model):
+    """
+    Trace CHAQUE consultation de la fiche d'un élève — qui l'a
+    ouverte, quand, et depuis quelle interface (espace enseignant
+    ou admin Django).
+
+    Pourquoi ce modèle existe : les données d'un élève (date de
+    naissance, contact du tuteur...) sont des données personnelles
+    de mineur. Le propriétaire de la plateforme a un accès technique
+    total via l'admin, ce qui est normal (il héberge et maintient le
+    site), mais ça doit être TRAÇABLE : en cas de doute ou de demande
+    d'une école, il doit pouvoir prouver que les consultations
+    enregistrées correspondent à un usage légitime (support,
+    débogage), jamais à une curiosité injustifiée.
+
+    Ce journal n'enregistre QUE la LECTURE. Les modifications (ajout,
+    changement, suppression) sont déjà tracées automatiquement par
+    Django lui-même dans la table interne admin.LogEntry — inutile
+    de dupliquer ce que Django fait déjà bien.
+    """
+
+    ORIGINE_CHOICES = [
+        ('ENSEIGNANT', 'Espace enseignant'),
+        ('ADMIN', "Interface d'administration"),
+    ]
+
+    utilisateur = models.ForeignKey(
+        'auth.User',
+        on_delete=models.SET_NULL,
+        # SET_NULL (pas CASCADE) : si le compte qui a consulté la
+        # fiche est un jour supprimé, on garde quand même la TRACE
+        # que CETTE fiche a été consultée à CETTE date — seule
+        # l'identité de qui l'a fait devient "Utilisateur supprimé".
+        # Supprimer la ligne entière reviendrait à effacer une partie
+        # de l'historique d'audit, ce qui irait à l'encontre de son
+        # utilité même.
+        null=True,
+        related_name='consultations_effectuees'
+    )
+
+    eleve = models.ForeignKey(
+        Eleve,
+        on_delete=models.CASCADE,
+        related_name='consultations'
+    )
+
+    origine = models.CharField(max_length=12, choices=ORIGINE_CHOICES)
+
+    date_consultation = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Consultation d'élève"
+        verbose_name_plural = "Journal des consultations"
+        ordering = ['-date_consultation']
+
+    def __str__(self):
+        nom_utilisateur = self.utilisateur.username if self.utilisateur else "Utilisateur supprimé"
+        return (
+            f"{nom_utilisateur} \u2192 {self.eleve.nom_complet} "
+            f"({self.date_consultation:%d/%m/%Y %H:%M})"
+        )

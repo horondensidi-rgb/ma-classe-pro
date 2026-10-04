@@ -1,5 +1,5 @@
 # ============================================================
-# APP : classes
+# APP : classes  NEW 4/10 22H 28
 # Fichier : views.py
 # Rôle : afficher les classes de l'enseignant connecté, le détail
 #        d'une classe (élèves + matières), et permettre d'ajouter
@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 
 from comptes.permissions import obtenir_enseignant_ou_403
-from .models import Classe, Eleve
+from .models import Classe, Eleve, JournalConsultation
 from .forms import EleveForm
 from .permissions import enseignant_a_acces_classe
 
@@ -163,6 +163,16 @@ def fiche_eleve_view(request, classe_id, eleve_id):
         raise PermissionDenied("Vous n'avez pas accès à cette classe.")
 
     eleve = get_object_or_404(Eleve, id=eleve_id, classe=classe)
+
+    JournalConsultation.objects.create(
+        utilisateur=request.user,
+        eleve=eleve,
+        origine='ENSEIGNANT',
+    )
+    # Une ligne d'audit par ouverture de cette page — volontairement
+    # placée APRÈS la vérification de permission : si l'accès est
+    # refusé (403), on ne veut pas enregistrer une "consultation" qui
+    # n'a en réalité jamais eu lieu.
 
     copies = Copie.objects.filter(
         eleve=eleve,
