@@ -8,6 +8,7 @@
     <p class="liste-classes-meta">{{ eleve.classe.nom }}</p>
 
     {% if lignes %}
+<p>Evaluation(s) en attente...</p>
         <table class="tableau">
             <thead>
                 <tr>
@@ -19,6 +20,7 @@
             </thead>
             <tbody>
                 {% for ligne in lignes %}
+<p>Evaluation(s) traitée(s) ✓</p>
                     <tr>
                         <td data-label="Matière">{{ ligne.evaluation.classe_matiere.matiere.nom }}</td>
                         <td data-label="Évaluation">{{ ligne.evaluation.titre }}</td>

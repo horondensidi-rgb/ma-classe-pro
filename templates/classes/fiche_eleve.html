@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block titre %}{{ eleve.nom_complet }} — Ma Classe Pro{% endblock %}
+{% block titre %}{{ eleve.nom_complet }} — TeachMali{% endblock %}
 
 {% block contenu %}
 <div class="contenu">
@@ -21,7 +21,7 @@
               onsubmit="return confirm('{% if eleve.compte_utilisateur %}Générer un nouveau code d{% else %}Créer l{% endif %}\'accès pour {{ eleve.nom_complet }} ?');">
             {% csrf_token %}
             <button type="submit" class="bouton-secondaire">
-                {% if eleve.compte_utilisateur %}Réinitialiser le code d'accès{% else %}Créer l'accès élève{% endif %}
+                {% if eleve.compte_utilisateur %}Réinitialiser le code d'accès aux devoirs{% else %}Créer l'accès élève aux devoirs{% endif %}
             </button>
         </form>
     </div>

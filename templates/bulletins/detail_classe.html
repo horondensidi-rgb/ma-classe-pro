@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block titre %}{{ classe.nom }} — Ma Classe Pro{% endblock %}
+{% block titre %}{{ classe.nom }} — TeachMali{% endblock %}
 
 {% block contenu %}
 <div class="contenu">
@@ -16,7 +16,7 @@
                 <li>
                     {{ cm.matiere.nom }}
                     — coefficient {{ cm.coefficient }}
-                    ({{ cm.enseignant.user.get_full_name }})
+                    <span style="color: green;">({{ cm.enseignant.user.get_full_name }} | Tel: {{cm.enseignant.telephone}})</span>
                     <a href="{% url 'evaluations:liste_evaluations' cm.id %}">Évaluations</a>
                 </li>
             {% endfor %}
