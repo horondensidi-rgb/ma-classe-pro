@@ -16,7 +16,7 @@
                 <li>
                     {{ cm.matiere.nom }}
                     — coefficient {{ cm.coefficient }}
-                    ({{ cm.enseignant.user.get_full_name }} — {{ cm.enseignant.telephone }})
+                    (<span style="color: green;"> <strong> 👤 {{ cm.enseignant.user.get_full_name }} — 📞 {{ cm.enseignant.telephone }}</strong></span>)
                     <a href="{% url 'evaluations:liste_evaluations' cm.id %}">Évaluations</a>
                     &middot;
                     <a href="{% url 'pedagogie:liste_fiches' cm.id %}">Fiches</a>

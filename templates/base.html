@@ -11,7 +11,7 @@
 
     <header class="entete">
         {% if user.profil_eleve %}
-            <a href="{% url 'evaluations:eleve_tableau_bord' %}" class="entete-marque">Ma Classe Pro</a>
+            <a href="{% url 'evaluations:eleve_tableau_bord' %}" class="entete-marque">TeachMali</a>
         {% else %}				
             <a href="{% url 'comptes:tableau_bord' %}" class="entete-marque">Ma Classe Pro</a>
         {% endif %}
