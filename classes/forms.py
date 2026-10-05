@@ -5,7 +5,7 @@
 # ============================================================
 
 from django import forms
-from .models import Eleve
+from .models import Eleve, Creneau
 
 
 class EleveForm(forms.ModelForm):
@@ -39,3 +39,30 @@ class EleveForm(forms.ModelForm):
             # sélecteur de date sur mobile comme sur PC.
             'date_naissance': forms.DateInput(attrs={'type': 'date'}),
         }
+
+
+class CreneauForm(forms.ModelForm):
+    """
+    Formulaire d'un créneau d'emploi du temps. Comme EleveForm, on
+    reçoit 'classe' en paramètre (pas dans request.POST) pour ne
+    proposer QUE les matières réellement enseignées dans CETTE
+    classe — jamais celles d'une autre classe.
+    """
+
+    class Meta:
+        model = Creneau
+        fields = ['classe_matiere', 'jour_semaine', 'heure_debut', 'heure_fin', 'salle']
+        widgets = {
+            'heure_debut': forms.TimeInput(attrs={'type': 'time'}),
+            'heure_fin': forms.TimeInput(attrs={'type': 'time'}),
+        }
+        labels = {
+            'classe_matiere': 'Matière',
+        }
+
+    def __init__(self, *args, classe=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if classe is not None:
+            self.fields['classe_matiere'].queryset = classe.classematiere_set.select_related(
+                'matiere', 'enseignant__user'
+            )

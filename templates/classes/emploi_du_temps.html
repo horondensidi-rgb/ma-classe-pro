@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block titre %}Emploi du temps — {{ classe.nom }}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'classes:detail_classe' classe.id %}">← {{ classe.nom }}</a>
+    </p>
+
+    <h2>Emploi du temps — {{ classe.nom }}</h2>
+
+    <a href="{% url 'classes:creer_creneau' classe.id %}" class="bouton">+ Ajouter un créneau</a>
+
+    {% for libelle_jour, creneaux_du_jour in jours_avec_creneaux %}
+        <h3>{{ libelle_jour }}</h3>
+
+        {% if creneaux_du_jour %}
+            <table class="tableau">
+                <thead>
+                    <tr>
+                        <th>Horaire</th>
+                        <th>Matière</th>
+                        <th>Enseignant</th>
+                        <th>Salle</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for creneau in creneaux_du_jour %}
+                        <tr>
+                            <td data-label="Horaire">{{ creneau.heure_debut|time:"H:i" }} – {{ creneau.heure_fin|time:"H:i" }}</td>
+                            <td data-label="Matière">{{ creneau.classe_matiere.matiere.nom }}</td>
+                            <td data-label="Enseignant">{{ creneau.classe_matiere.enseignant.user.get_full_name }}</td>
+                            <td data-label="Salle">{{ creneau.salle|default:"—" }}</td>
+                            <td class="cellule-actions">
+                                <div class="groupe-actions">
+                                    <a href="{% url 'classes:modifier_creneau' classe.id creneau.id %}" class="bouton-secondaire bouton-petit">
+                                        Modifier
+                                    </a>
+                                    <form method="post"
+                                          action="{% url 'classes:supprimer_creneau' classe.id creneau.id %}"
+                                          onsubmit="return confirm('Supprimer ce créneau ?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="bouton-danger bouton-petit">Supprimer</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="liste-classes-meta">Aucun cours ce jour.</p>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

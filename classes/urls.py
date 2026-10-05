@@ -19,6 +19,18 @@ urlpatterns = [
         views.creer_ou_reinitialiser_acces_eleve_view,
         name='creer_acces_eleve'
     ),
+    path('<int:classe_id>/emploi-du-temps/', views.emploi_du_temps_view, name='emploi_du_temps'),
+    path('<int:classe_id>/emploi-du-temps/creer/', views.creer_creneau_view, name='creer_creneau'),
+    path(
+        '<int:classe_id>/emploi-du-temps/<int:creneau_id>/modifier/',
+        views.modifier_creneau_view,
+        name='modifier_creneau'
+    ),
+    path(
+        '<int:classe_id>/emploi-du-temps/<int:creneau_id>/supprimer/',
+        views.supprimer_creneau_view,
+        name='supprimer_creneau'
+    ),
     path('<int:classe_id>/eleves/<int:eleve_id>/desactiver/', views.desactiver_eleve_view, name='desactiver_eleve'),
     path('<int:classe_id>/eleves/<int:eleve_id>/reactiver/', views.reactiver_eleve_view, name='reactiver_eleve'),
 ]

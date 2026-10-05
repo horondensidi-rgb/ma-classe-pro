@@ -1,5 +1,5 @@
 # ============================================================
-# APP : classes NEW 4/10 22H 28
+# APP : classes
 # Fichier : admin.py
 # Rôle : rendre AnneeScolaire, Matiere, Classe, ClasseMatiere
 #        et Eleve gérables depuis l'admin, avec search_fields
@@ -10,7 +10,7 @@
 # ============================================================
 
 from django.contrib import admin
-from .models import AnneeScolaire, Matiere, Classe, ClasseMatiere, Eleve, JournalConsultation
+from .models import AnneeScolaire, Matiere, Classe, ClasseMatiere, Eleve, JournalConsultation, Creneau
 
 
 # ------------------------------------------------------------
@@ -167,3 +167,14 @@ class JournalConsultationAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+# ------------------------------------------------------------
+# CRENEAU (emploi du temps)
+# ------------------------------------------------------------
+@admin.register(Creneau)
+class CreneauAdmin(admin.ModelAdmin):
+    list_display = ['classe_matiere', 'jour_semaine', 'heure_debut', 'heure_fin', 'salle']
+    list_filter = ['jour_semaine', 'classe_matiere__classe']
+    search_fields = ['classe_matiere__classe__nom', 'classe_matiere__matiere__nom', 'salle']
+    autocomplete_fields = ['classe_matiere']

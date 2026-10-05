@@ -1,5 +1,5 @@
 # ============================================================
-# APP : classes  NEW 4/10 22H 28
+# APP : classes
 # Fichier : views.py
 # Rôle : afficher les classes de l'enseignant connecté, le détail
 #        d'une classe (élèves + matières), et permettre d'ajouter
@@ -18,8 +18,8 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 
 from comptes.permissions import obtenir_enseignant_ou_403
-from .models import Classe, Eleve, JournalConsultation
-from .forms import EleveForm
+from .models import Classe, Eleve, JournalConsultation, Creneau
+from .forms import EleveForm, CreneauForm
 from .permissions import enseignant_a_acces_classe
 
 
@@ -376,3 +376,109 @@ def ajouter_eleve_view(request, classe_id):
         'form': form,
         'classe': classe,
     })
+
+
+@login_required
+def emploi_du_temps_view(request, classe_id):
+    """
+    Affiche l'emploi du temps complet d'une classe, regroupé par
+    jour de la semaine.
+    """
+    enseignant = obtenir_enseignant_ou_403(request)
+    classe = get_object_or_404(Classe, id=classe_id)
+
+    if not enseignant_a_acces_classe(enseignant, classe):
+        raise PermissionDenied("Vous n'avez pas accès à cette classe.")
+
+    creneaux = Creneau.objects.filter(
+        classe_matiere__classe=classe
+    ).select_related('classe_matiere__matiere', 'classe_matiere__enseignant__user')
+    # Déjà triés par jour_semaine puis heure_debut grâce au Meta.ordering
+    # du modèle Creneau — pas besoin de repréciser .order_by() ici.
+
+    # On regroupe par jour sous forme de LISTE DE TUPLES (pas un
+    # dictionnaire) : Django ne sait pas faire dictionnaire[variable]
+    # dans un template, donc transmettre {code: [...]} obligerait à
+    # une astuce. Une liste de (code, libelle, liste_de_creneaux) se
+    # parcourt directement avec un simple {% for %}, sans contorsion.
+    emploi_par_jour = {code: [] for code, _ in Creneau.JOUR_CHOICES}
+    for creneau in creneaux:
+        emploi_par_jour[creneau.jour_semaine].append(creneau)
+
+    jours_avec_creneaux = [
+        (libelle, emploi_par_jour[code])
+        for code, libelle in Creneau.JOUR_CHOICES
+    ]
+
+    return render(request, 'classes/emploi_du_temps.html', {
+        'classe': classe,
+        'jours_avec_creneaux': jours_avec_creneaux,
+    })
+
+
+@login_required
+def creer_creneau_view(request, classe_id):
+    enseignant = obtenir_enseignant_ou_403(request)
+    classe = get_object_or_404(Classe, id=classe_id)
+
+    if not enseignant_a_acces_classe(enseignant, classe):
+        raise PermissionDenied("Vous n'avez pas accès à cette classe.")
+
+    if request.method == 'POST':
+        form = CreneauForm(request.POST, classe=classe)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Créneau ajouté à l'emploi du temps.")
+            return redirect('classes:emploi_du_temps', classe_id=classe.id)
+        # Si form.is_valid() est False à cause d'un chevauchement
+        # (voir Creneau.clean()), l'erreur apparaît automatiquement
+        # dans form.non_field_errors() au rendu du template.
+    else:
+        form = CreneauForm(classe=classe)
+
+    return render(request, 'classes/creer_creneau.html', {
+        'form': form,
+        'classe': classe,
+    })
+
+
+@login_required
+def modifier_creneau_view(request, classe_id, creneau_id):
+    enseignant = obtenir_enseignant_ou_403(request)
+    classe = get_object_or_404(Classe, id=classe_id)
+
+    if not enseignant_a_acces_classe(enseignant, classe):
+        raise PermissionDenied("Vous n'avez pas accès à cette classe.")
+
+    creneau = get_object_or_404(Creneau, id=creneau_id, classe_matiere__classe=classe)
+
+    if request.method == 'POST':
+        form = CreneauForm(request.POST, instance=creneau, classe=classe)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Créneau mis à jour.")
+            return redirect('classes:emploi_du_temps', classe_id=classe.id)
+    else:
+        form = CreneauForm(instance=creneau, classe=classe)
+
+    return render(request, 'classes/creer_creneau.html', {
+        'form': form,
+        'classe': classe,
+        'creneau': creneau,
+    })
+
+
+@login_required
+@require_POST
+def supprimer_creneau_view(request, classe_id, creneau_id):
+    enseignant = obtenir_enseignant_ou_403(request)
+    classe = get_object_or_404(Classe, id=classe_id)
+
+    if not enseignant_a_acces_classe(enseignant, classe):
+        raise PermissionDenied("Vous n'avez pas accès à cette classe.")
+
+    creneau = get_object_or_404(Creneau, id=creneau_id, classe_matiere__classe=classe)
+    creneau.delete()
+    messages.success(request, "Créneau supprimé.")
+
+    return redirect('classes:emploi_du_temps', classe_id=classe.id)

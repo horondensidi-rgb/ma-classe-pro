@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block titre %}{% if creneau %}Modifier le créneau{% else %}Nouveau créneau{% endif %}{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <p class="liste-classes-meta">
+        <a href="{% url 'classes:emploi_du_temps' classe.id %}">← Emploi du temps — {{ classe.nom }}</a>
+    </p>
+
+    <h2>{% if creneau %}Modifier le créneau{% else %}Nouveau créneau{% endif %}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="champ-erreur">
+                {% for erreur in form.non_field_errors %}
+                    <p>{{ erreur }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for champ in form %}
+            <div class="champ">
+                <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                {{ champ }}
+                {% for erreur in champ.errors %}
+                    <div class="champ-erreur">{{ erreur }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="groupe-actions">
+            <button type="submit" class="bouton">
+                {% if creneau %}Enregistrer{% else %}Ajouter{% endif %}
+            </button>
+            <a href="{% url 'classes:emploi_du_temps' classe.id %}" class="bouton-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

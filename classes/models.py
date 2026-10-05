@@ -1,5 +1,5 @@
 # ============================================================
-# APP : classes. NEW 4/10 22H 28
+# APP : classes
 # Fichier : models.py
 # Rôle : gérer les années scolaires, les classes, les matières
 #        et les élèves de chaque enseignant.
@@ -387,3 +387,106 @@ class JournalConsultation(models.Model):
             f"{nom_utilisateur} \u2192 {self.eleve.nom_complet} "
             f"({self.date_consultation:%d/%m/%Y %H:%M})"
         )
+
+
+# ------------------------------------------------------------
+# 7. CRENEAU D'EMPLOI DU TEMPS
+# ------------------------------------------------------------
+class Creneau(models.Model):
+    """
+    Un cours précis dans l'emploi du temps hebdomadaire d'une classe :
+    "Français, lundi 8h-9h, salle B2".
+
+    On rattache le créneau à ClasseMatiere (pas séparément à Matiere
+    + Enseignant) : cette table connaît déjà la bonne combinaison
+    classe/matière/enseignant (voir classes/models.py plus haut), pas
+    besoin de la ressaisir ni de risquer une incohérence (ex: un
+    enseignant qui n'enseigne pas réellement cette matière dans cette
+    classe).
+    """
+
+    JOUR_CHOICES = [
+        ('LUNDI', 'Lundi'),
+        ('MARDI', 'Mardi'),
+        ('MERCREDI', 'Mercredi'),
+        ('JEUDI', 'Jeudi'),
+        ('VENDREDI', 'Vendredi'),
+        ('SAMEDI', 'Samedi'),
+        # Pas de dimanche : jour non scolaire au Mali. Le samedi est
+        # inclus car souvent travaillé (au moins le matin) dans le
+        # fondamental et le secondaire malien.
+    ]
+
+    classe_matiere = models.ForeignKey(
+        ClasseMatiere,
+        on_delete=models.CASCADE,
+        # CASCADE : si on retire une matière de la classe (suppression
+        # de la ClasseMatiere), ses créneaux n'ont plus de sens tout
+        # seuls, autant les supprimer avec elle.
+        related_name='creneaux'
+    )
+
+    jour_semaine = models.CharField(max_length=10, choices=JOUR_CHOICES)
+
+    heure_debut = models.TimeField()
+    heure_fin = models.TimeField()
+
+    salle = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Numéro ou nom de la salle (optionnel)"
+    )
+
+    class Meta:
+        verbose_name = "Créneau d'emploi du temps"
+        verbose_name_plural = "Emploi du temps"
+        ordering = ['jour_semaine', 'heure_debut']
+
+    def __str__(self):
+        return (
+            f"{self.get_jour_semaine_display()} "
+            f"{self.heure_debut:%H:%M}-{self.heure_fin:%H:%M} — {self.classe_matiere}"
+        )
+
+    def clean(self):
+        """
+        Empêche deux incohérences classiques d'emploi du temps,
+        vérifiées au niveau du MODÈLE (donc impossibles à contourner,
+        que la saisie vienne d'un formulaire ou de l'admin) :
+
+        1. Une classe ne peut pas avoir deux cours en même temps.
+        2. Un enseignant ne peut pas être dans deux classes à la fois
+           au même horaire (recherche à travers TOUTES les classes,
+           pas seulement celle-ci).
+        """
+        from django.core.exceptions import ValidationError
+
+        if self.heure_fin <= self.heure_debut:
+            raise ValidationError("L'heure de fin doit être après l'heure de début.")
+
+        chevauchement_classe = Creneau.objects.filter(
+            classe_matiere__classe=self.classe_matiere.classe,
+            jour_semaine=self.jour_semaine,
+            heure_debut__lt=self.heure_fin,
+            heure_fin__gt=self.heure_debut,
+        ).exclude(pk=self.pk)
+        # __lt / __gt croisés (pas ==) : c'est le test standard de
+        # chevauchement entre deux intervalles de temps. Deux créneaux
+        # se chevauchent dès que l'un commence avant que l'autre finisse
+        # ET finit après que l'autre commence.
+        if chevauchement_classe.exists():
+            raise ValidationError(
+                "Cette classe a déjà un cours sur ce créneau horaire."
+            )
+
+        chevauchement_enseignant = Creneau.objects.filter(
+            classe_matiere__enseignant=self.classe_matiere.enseignant,
+            jour_semaine=self.jour_semaine,
+            heure_debut__lt=self.heure_fin,
+            heure_fin__gt=self.heure_debut,
+        ).exclude(pk=self.pk)
+        if chevauchement_enseignant.exists():
+            raise ValidationError(
+                f"{self.classe_matiere.enseignant} a déjà un cours sur ce "
+                f"créneau, dans une autre classe."
+            )

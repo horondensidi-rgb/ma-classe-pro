@@ -2,18 +2,29 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">			
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block titre %}TeachMali{% endblock %}</title>
+    <title>{% block titre %} TeachMali {% endblock %}</title>
     <link rel="stylesheet" href="{% static 'comptes/css/style.css' %}">
 </head>
 <body>
 
     <header class="entete">
         {% if user.profil_eleve %}
-            <a href="{% url 'evaluations:eleve_tableau_bord' %}" class="entete-marque">TeachMali</a>
-        {% else %}				
-            <a href="{% url 'comptes:tableau_bord' %}" class="entete-marque">TeachMali</a>
+            <a href="{% url 'evaluations:eleve_tableau_bord' %}" class="entete-marque">
+                <img src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" class="entete-logo">
+            </a>
+        {% elif user.is_authenticated %}
+            <a href="{% url 'comptes:tableau_bord' %}" class="entete-marque">
+                <img src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" class="entete-logo">
+            </a>
+        {% else %}
+            {# Visiteur anonyme (page d'accueil publique) : le logo   #}
+            {# renvoie vers la racine du site, pas vers une page qui  #}
+            {# exigerait une connexion. #}
+            <a href="/" class="entete-marque">
+                <img src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" class="entete-logo">
+            </a>
         {% endif %}
         {# user.profil_eleve / user.profil_enseignant : si la relation    #}
         {# n'existe pas pour cet utilisateur, Django templates renvoient  #}
