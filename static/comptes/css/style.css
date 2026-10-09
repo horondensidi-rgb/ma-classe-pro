@@ -1,776 +1,996 @@
 /* ============================================================
+   TeachMali : feuille de style principale
    Fichier : static/comptes/css/style.css
-   Palette et mise en page de Ma Classe Pro.
 
-   Choix délibérés (à ne pas changer sans raison) :
-   - Pas de dégradés ni d'ombres portées génériques.
-   - Polices système uniquement (pas de police chargée depuis
-     internet) : l'app doit rester utilisable même en connexion
-     faible ou hors-ligne, conformément au projet PWA prévu.
-   - Coins presque droits (radius minime), pour un rendu "document
-     officiel" plutôt que "carte d'application".
-   - Mobile-first : les règles de base ciblent le téléphone (le
-     terminal principal de l'enseignant), et les media queries
-     AJOUTENT de la mise en page pour les écrans plus larges
-     (tablette, PC) — jamais l'inverse.
+   Principes (à garder en tête si tu modifies ce fichier) :
+   - Palette tirée du logo : nuit (encre du cahier), soleil (surligneur),
+     feuille (validation). Le jaune n'est JAMAIS utilisé comme couleur
+     de texte sur fond clair (contraste insuffisant).
+   - Police Poppins hébergée sur le site (dossier static/comptes/fonts/) :
+     aucune requête vers Google, donc rapide en connexion faible et
+     utilisable hors-ligne dans la future version application.
+   - Mobile d'abord : les règles de base visent le téléphone, les
+     media queries ajoutent la mise en page pour tablette et PC.
+   - Les zones tactiles font au moins 44 px de haut.
    ============================================================ */
 
+/* ---------- Police (3 graisses suffisent) ---------- */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/poppins-400.woff') format('woff');
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../fonts/poppins-500.woff') format('woff');
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/poppins-700.woff') format('woff');
+}
+
+/* ---------- Variables ---------- */
 :root {
-    /* --- Couleurs de base --- */
-    --couleur-fond: #FBF8F2;           /* papier chaud, pas blanc pur */
-    --couleur-encre: #25313D;          /* texte principal, bleu-ardoise profond */
-    --couleur-encre-douce: #56626C;    /* texte secondaire */
-    --couleur-accent: #B6742B;         /* ocre, rappelle les tampons/cachets officiels */
-    --couleur-accent-fonce: #8F5A1F;
-    --couleur-validation: #3F6C51;     /* vert profond, discret, pour les confirmations */
-    --couleur-validation-fonce: #305640;
-    --couleur-erreur: #A23B2E;         /* rouge brique, pas un rouge criard */
-    --couleur-erreur-fonce: #832F24;
-    --couleur-trait: #D8CFC0;          /* hairlines / séparateurs */
-    --couleur-panneau: #22303D;        /* panneau latéral sombre (identité de marque) */
-    --couleur-panneau-texte: #EDE7DA;
+    /* Couleurs du logo */
+    --nuit: #003162;
+    --nuit-fonce: #00224A;
+    --nuit-pale: #E8EEF6;        /* fond de l'élément actif, survols */
+    --feuille: #16902E;          /* décoratif uniquement (4,1:1 avec du blanc) */
+    --feuille-bouton: #117A27;   /* fond de bouton (5,5:1 avec du blanc) */
+    --feuille-fonce: #0E6A22;
+    --feuille-texte: #0E7425;    /* texte vert sur fond clair */
+    --feuille-pale: #E6F4EA;
+    --soleil: #FBC003;
+    --soleil-pale: #FFF6D6;
 
-    /* --- Typographie --- */
-    --police-titres: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
-    --police-texte: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Alerte */
+    --alerte: #B4281D;
+    --alerte-fonce: #8F1F16;
+    --alerte-pale: #FCEBE9;
 
-    /* --- Échelle d'espacement --- */
-    --espace-xs: 0.5rem;
-    --espace-sm: 1rem;
-    --espace-md: 1.75rem;
-    --espace-lg: 3rem;
+    /* Neutres */
+    --fond: #F3F6FA;
+    --surface: #FFFFFF;
+    --trait: #DDE4EC;
+    --trait-fort: #C3CEDB;
+    --encre: #1C2A3A;
+    --encre-douce: #5A6B80;
+    --sur-nuit-doux: #C9D6E8;
 
-    --rayon: 4px;
+    /* Typographie */
+    --police: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    /* Formes : un rayon par rôle, pas un rayon unique partout */
+    --rayon-champ: 8px;
+    --rayon-panneau: 14px;
+    --rayon-pastille: 999px;
+
+    --largeur-menu: 17rem;
 }
 
-* {
-    box-sizing: border-box;
-}
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
-    /* Empêche le zoom-arrière brutal de Chrome mobile quand une
-       page est un peu plus large que l'écran (ex: un tableau non
-       encore adapté) : on préfère un défilement horizontal doux. */
     -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 4.5rem;
 }
 
 body {
     margin: 0;
-    font-family: var(--police-texte);
-    color: var(--couleur-encre);
-    background: var(--couleur-fond);
-    line-height: 1.5;
+    font-family: var(--police);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--encre);
+    background: var(--fond);
+    -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 {
-    font-family: var(--police-titres);
-    font-weight: 600;
+h1, h2, h3, h4 {
+    margin: 0 0 0.6em;
+    color: var(--nuit);
+    font-weight: 700;
     line-height: 1.2;
-    margin: 0 0 var(--espace-sm) 0;
+    letter-spacing: -0.015em;
+}
+h1 { font-size: clamp(1.75rem, 1.3rem + 2vw, 2.6rem); }
+h2 { font-size: clamp(1.3rem, 1.1rem + 1vw, 1.65rem); }
+h3 { font-size: 1.05rem; margin-top: 2rem; }
+h4 { font-size: 0.95rem; }
+
+p { margin: 0 0 1em; }
+
+a { color: var(--nuit); text-underline-offset: 0.18em; }
+a:hover { color: var(--feuille-texte); }
+
+img { max-width: 100%; }
+
+:focus-visible {
+    outline: 2px solid var(--nuit);
+    outline-offset: 2px;
 }
 
-/* --- En-tête (barre du haut, visible sur toutes les pages) --- */
-.entete {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--espace-xs);
-    padding: var(--espace-xs) var(--espace-sm);
-    border-bottom: 1px solid var(--couleur-trait);
-}
-
-@media (min-width: 640px) {
-    .entete {
-        padding: var(--espace-sm) var(--espace-md);
-    }
-}
-
-.entete-marque {
-    font-family: var(--police-titres);
-    font-size: 1.1rem;
-    color: var(--couleur-encre);
+.lien-evitement {
+    position: absolute;
+    left: 0.5rem;
+    top: -4rem;
+    z-index: 100;
+    padding: 0.6rem 1rem;
+    background: var(--nuit);
+    color: #fff;
+    border-radius: var(--rayon-champ);
     text-decoration: none;
 }
+.lien-evitement:focus { top: 0.5rem; color: #fff; }
 
-@media (min-width: 640px) {
-    .entete-marque {
-        font-size: 1.25rem;
-    }
+/* ============================================================
+   COQUE DE L'APPLICATION (utilisateur connecté)
+   Barre latérale à gauche sur PC/tablette, tiroir sur téléphone.
+   ============================================================ */
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
-.entete-nav {
+.sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    flex: 0 0 var(--largeur-menu);
+    width: var(--largeur-menu);
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--trait);
+}
+
+.sidebar-marque {
+    display: block;
+    padding: 1.4rem 1.25rem 0.9rem;
+}
+.sidebar-logo { display: block; width: 10.5rem; height: auto; }
+
+.sidebar-nav { flex: 1; padding: 0.25rem 0.75rem 1rem; }
+
+/* Titres de groupes : phrase normale, pas de majuscules */
+.sidebar-groupe {
+    margin: 1.25rem 0.75rem 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--encre-douce);
+}
+
+.nav-lien {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: var(--espace-sm);
-}
-
-.entete-utilisateur {
-    color: var(--couleur-encre-douce);
-    font-size: 0.85rem;
-}
-
-.entete-nav a {
-    color: var(--couleur-encre);
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.75rem;
+    border: 0;
+    border-radius: var(--rayon-champ);
+    background: none;
+    color: var(--encre);
+    font: inherit;
+    font-weight: 500;
+    text-align: left;
     text-decoration: none;
-    border-bottom: 1px solid var(--couleur-accent);
+    cursor: pointer;
+}
+.nav-lien svg {
+    flex: 0 0 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    color: var(--encre-douce);
+}
+.nav-lien:hover { background: var(--fond); color: var(--nuit); }
+.nav-lien:hover svg { color: var(--nuit); }
+
+/* Page active : fond pâle + trait jaune "surligneur" au bord du menu */
+.nav-lien[aria-current="page"] {
+    background: var(--nuit-pale);
+    color: var(--nuit);
+    font-weight: 700;
+}
+.nav-lien[aria-current="page"] svg { color: var(--nuit); }
+.nav-lien[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    left: -0.75rem;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: var(--soleil);
+}
+
+.sidebar-pied { padding: 0.75rem; border-top: 1px solid var(--trait); }
+.profil {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0.5rem;
+}
+.avatar {
+    flex: 0 0 2.5rem;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--nuit);
+    color: #fff;
+    font-weight: 700;
+}
+.profil-texte { min-width: 0; }
+.profil-nom {
+    display: block;
+    overflow: hidden;
+    color: var(--nuit);
+    font-weight: 700;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.profil-role { display: block; color: var(--encre-douce); font-size: 0.8rem; }
+
+.app-main { flex: 1; min-width: 0; }
+.app-contenu { padding: 1.25rem 1rem 3rem; }
+.contenu { max-width: 70rem; margin: 0 auto; }
+
+.topbar { display: none; }
+.menu-voile { display: none; }
+
+@media (min-width: 900px) {
+    .app-contenu { padding: 2rem 2.5rem 4rem; }
+}
+
+/* ---------- Téléphone : le menu devient un tiroir ---------- */
+@media (max-width: 899.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        height: auto;
+        width: min(84vw, 18rem);
+        padding-bottom: env(safe-area-inset-bottom);
+        transform: translateX(-102%);
+        visibility: hidden;
+        transition: transform 0.22s ease, visibility 0s linear 0.22s;
+    }
+    body.menu-ouvert .sidebar {
+        transform: none;
+        visibility: visible;
+        transition-delay: 0s;
+        box-shadow: 0 16px 48px rgba(0, 24, 56, 0.3);
+    }
+    .menu-voile {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 55;
+        background: rgba(0, 24, 56, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+    }
+    body.menu-ouvert .menu-voile {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0s;
+    }
+    body.menu-ouvert { overflow: hidden; }
+
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: calc(3.5rem + env(safe-area-inset-top));
+        padding: env(safe-area-inset-top) 0.5rem 0;
+        background: var(--surface);
+        border-bottom: 1px solid var(--trait);
+    }
+    .topbar-bouton {
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border: 0;
+        border-radius: var(--rayon-champ);
+        background: none;
+        color: var(--nuit);
+        cursor: pointer;
+    }
+    .topbar-bouton:hover { background: var(--fond); }
+    .topbar-bouton svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+    }
+    .topbar-marque { display: flex; align-items: center; }
+    .topbar-logo { display: block; height: 2rem; width: auto; }
 }
 
 /* ============================================================
+   EN-TÊTE PUBLIC (visiteur non connecté)
+   ============================================================ */
+.pub-entete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    padding: 0.7rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--trait);
+}
+.pub-logo { display: block; height: 2.25rem; width: auto; }
+.pub-nav { display: flex; align-items: center; gap: 1rem; }
+.pub-nav a:not(.bouton) { font-weight: 500; text-decoration: none; color: var(--nuit); }
+.pub-nav a:not(.bouton):hover { text-decoration: underline; }
+
+@media (min-width: 900px) {
+    .pub-entete { padding: 0.8rem 2rem; }
+    .pub-logo { height: 2.5rem; }
+}
+
+.page-publique .contenu { padding: 2.5rem 1.25rem 3rem; }
+
+/* ---------- Messages (Django messages) ---------- */
+.messages { display: grid; gap: 0.5rem; margin: 0 0 1.25rem; padding: 0; list-style: none; }
+.message-flash {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid;
+    border-radius: var(--rayon-champ);
+    font-weight: 500;
+}
+.message-success { background: var(--feuille-pale); border-color: #B7DEC1; color: #0B5F1E; }
+.message-error   { background: var(--alerte-pale);  border-color: #F1BDB8; color: var(--alerte-fonce); }
+.message-info,
+.message-debug   { background: var(--nuit-pale);    border-color: #C5D3E6; color: var(--nuit); }
+.message-warning { background: var(--soleil-pale);  border-color: #F2DD93; color: #5B4500; }
+
+/* ============================================================
    BOUTONS
-   Trois familles, reconnaissables au premier coup d'œil :
-   - .bouton            action principale (ocre plein)
-   - .bouton-secondaire action neutre (contour, "Modifier")
-   - .bouton-danger     action destructive (rouge plein, "Supprimer")
-   - .bouton-succes     action positive (vert plein, "Réactiver")
-   Ajouter .bouton-petit sur n'importe laquelle pour la variante
-   compacte utilisée dans les lignes de tableau.
+   .bouton            action principale (nuit)
+   .bouton-secondaire action neutre (contour)
+   .bouton-danger     action destructive (rouge)
+   .bouton-succes     action positive (vert)
+   .bouton-petit      variante compacte pour les lignes de tableau
    ============================================================ */
 .bouton,
 .bouton-secondaire,
 .bouton-danger,
-.bouton-succes,
-.entete-deconnexion button {
+.bouton-succes {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 1.15rem;
     border: 1.5px solid transparent;
-    padding: 0.65rem 1.3rem;
-    border-radius: var(--rayon);
-    font-size: 0.95rem;
-    font-family: var(--police-texte);
-    font-weight: 600;
-    cursor: pointer;
+    border-radius: var(--rayon-champ);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.25;
+    text-align: center;
     text-decoration: none;
-    line-height: 1.2;
-    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
-    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.bouton:active,
-.bouton-secondaire:active,
-.bouton-danger:active,
-.bouton-succes:active {
-    transform: translateY(1px);
+.bouton { background: var(--nuit); border-color: var(--nuit); color: #fff; }
+.bouton:hover { background: var(--nuit-fonce); border-color: var(--nuit-fonce); color: #fff; }
+
+.bouton-secondaire { background: var(--surface); border-color: var(--trait-fort); color: var(--nuit); }
+.bouton-secondaire:hover { background: var(--nuit-pale); border-color: var(--nuit); color: var(--nuit); }
+
+.bouton-danger { background: var(--alerte); border-color: var(--alerte); color: #fff; }
+.bouton-danger:hover { background: var(--alerte-fonce); border-color: var(--alerte-fonce); color: #fff; }
+
+.bouton-succes { background: var(--feuille-bouton); border-color: var(--feuille-bouton); color: #fff; }
+.bouton-succes:hover { background: var(--feuille-fonce); border-color: var(--feuille-fonce); color: #fff; }
+
+.bouton-petit { min-height: 2.25rem; padding: 0.3rem 0.8rem; font-size: 0.82rem; }
+
+/* Sur écran tactile, même les petits boutons restent faciles à toucher */
+@media (pointer: coarse) {
+    .bouton-petit { min-height: 2.75rem; }
 }
 
-/* Action principale : ocre plein */
-.bouton,
-.entete-deconnexion button {
-    background: var(--couleur-accent);
-    border-color: var(--couleur-accent);
-    color: #FFFFFF;
-}
-
-.bouton:hover,
-.entete-deconnexion button:hover {
-    background: var(--couleur-accent-fonce);
-    border-color: var(--couleur-accent-fonce);
-}
-
-/* Action neutre : contour ardoise, fond transparent */
-.bouton-secondaire {
-    background: transparent;
-    border-color: var(--couleur-trait);
-    color: var(--couleur-encre);
-}
-
-.bouton-secondaire:hover {
-    border-color: var(--couleur-encre);
-    background: #F1ECE1;
-}
-
-/* Action destructive : rouge brique plein */
-.bouton-danger {
-    background: var(--couleur-erreur);
-    border-color: var(--couleur-erreur);
-    color: #FFFFFF;
-}
-
-.bouton-danger:hover {
-    background: var(--couleur-erreur-fonce);
-    border-color: var(--couleur-erreur-fonce);
-}
-
-/* Action positive : vert plein (ex: réactiver un élève) */
-.bouton-succes {
-    background: var(--couleur-validation);
-    border-color: var(--couleur-validation);
-    color: #FFFFFF;
-}
-
-.bouton-succes:hover {
-    background: var(--couleur-validation-fonce);
-    border-color: var(--couleur-validation-fonce);
-}
-
-/* Variante compacte pour les actions dans une ligne de tableau */
-.bouton-petit {
-    padding: 0.4rem 0.85rem;
-    font-size: 0.82rem;
-}
-
-/* Regroupe plusieurs boutons d'action (ex: Modifier + Supprimer)
-   avec un espacement propre, et permet un retour à la ligne sur
-   très petit écran plutôt que de faire déborder la page. */
 .groupe-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
-    align-items: center;
+    margin: 0.75rem 0;
 }
-
-/* Un <form> avec un seul bouton (ex: suppression) ne doit pas se
-   comporter comme un bloc pleine largeur au milieu des autres
-   boutons : on l'aligne en ligne avec eux. */
-.groupe-actions form {
-    display: inline-flex;
-    margin: 0;
-}
-
-/* --- Mise en page "registre" en deux colonnes pour l'auth --- */
-.ecran-auth {
-    display: grid;
-    grid-template-columns: 1fr;
-    min-height: calc(100vh - 65px);
-}
-
-@media (min-width: 900px) {
-    .ecran-auth {
-        grid-template-columns: 5fr 7fr;
-    }
-}
-
-.ecran-auth-panneau {
-    background: var(--couleur-panneau);
-    color: var(--couleur-panneau-texte);
-    padding: var(--espace-lg) var(--espace-md);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.ecran-auth-panneau h1 {
-    color: #FFFFFF;
-    font-size: 1.6rem;
-    max-width: 20ch;
-}
-
-@media (min-width: 640px) {
-    .ecran-auth-panneau h1 {
-        font-size: 2rem;
-    }
-}
-
-.ecran-auth-panneau p {
-    color: var(--couleur-panneau-texte);
-    max-width: 42ch;
-}
-
-.ecran-auth-formulaire {
-    padding: var(--espace-lg) var(--espace-md);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.ecran-auth-formulaire form {
-    max-width: 420px;
-    width: 100%;
-}
-
-/* --- Champs de formulaire --- */
-.champ {
-    margin-bottom: var(--espace-sm);
-}
-
-.champ label {
-    display: block;
-    font-size: 0.9rem;
-    color: var(--couleur-encre-douce);
-    margin-bottom: 0.3rem;
-}
-
-.champ input,
-.champ select {
-    width: 100%;
-    padding: 0.65rem 0.75rem;
-    border: 1px solid var(--couleur-trait);
-    border-radius: var(--rayon);
-    font-size: 1rem;
-    background: #FFFFFF;
-    color: var(--couleur-encre);
-}
-
-.champ input:focus,
-.champ select:focus {
-    outline: 2px solid var(--couleur-accent);
-    outline-offset: 1px;
-}
-
-.champ-erreur {
-    color: var(--couleur-erreur);
-    font-size: 0.85rem;
-    margin-top: 0.3rem;
-}
-
-.lien-secondaire {
-    margin-top: var(--espace-md);
-    font-size: 0.9rem;
-    color: var(--couleur-encre-douce);
-}
-
-.lien-secondaire a {
-    color: var(--couleur-accent);
-}
-
-/* --- Contenu général (pages après connexion) --- */
-.contenu {
-    padding: var(--espace-sm);
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-@media (min-width: 640px) {
-    .contenu {
-        padding: var(--espace-md);
-    }
-}
-
-.message-flash {
-    background: #EAF1EC;
-    border-left: 3px solid var(--couleur-validation);
-    padding: var(--espace-xs) var(--espace-sm);
-    color: var(--couleur-validation);
-}
-
-/* --- Listes et tableaux (classes, élèves) --- */
-.liste-classes {
-    list-style: none;
-    padding: 0;
-}
-
-.liste-classes li {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.3rem;
-    padding: var(--espace-xs) 0;
-    border-bottom: 1px solid var(--couleur-trait);
-}
-
-.liste-classes li a {
-    color: var(--couleur-encre);
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.liste-classes-meta {
-    color: var(--couleur-encre-douce);
-    font-size: 0.85rem;
-}
+.groupe-actions form { display: inline-flex; margin: 0; }
 
 /* ============================================================
-   TABLEAUX RESPONSIVES
-   Sur écran large (tablette/PC), un tableau classique.
-   Sur téléphone (< 640px), chaque LIGNE devient une petite carte
-   empilée : plus besoin de faire défiler horizontalement pour
-   lire un devoir ou une note. Ça exige que chaque <td> porte un
-   attribut data-label="..." reprenant le texte de son en-tête
-   (déjà fait dans les templates) : c'est ce texte que la carte
-   affiche comme étiquette, via la propriété CSS content.
+   FORMULAIRES
    ============================================================ */
+.champ { margin-bottom: 1.1rem; }
+.champ label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.champ input:not([type="checkbox"]):not([type="radio"]),
+.champ select,
+.champ textarea {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.6rem 0.8rem;
+    border: 1.5px solid var(--trait-fort);
+    border-radius: var(--rayon-champ);
+    background: var(--surface);
+    color: var(--encre);
+    font: inherit;
+    font-size: 1rem;   /* 16 px : évite le zoom automatique sur iPhone */
+}
+.champ textarea { min-height: 5.5rem; resize: vertical; }
+.champ input[type="checkbox"],
+.champ input[type="radio"] {
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: var(--nuit);
+    vertical-align: middle;
+}
+.champ input:focus,
+.champ select:focus,
+.champ textarea:focus {
+    outline: none;
+    border-color: var(--nuit);
+    box-shadow: 0 0 0 3px rgba(0, 49, 98, 0.18);
+}
+.champ small { display: block; margin-top: 0.3rem; color: var(--encre-douce); font-size: 0.8rem; }
+.champ-erreur { margin-top: 0.35rem; color: var(--alerte); font-size: 0.85rem; font-weight: 500; }
+
+.champ-note {
+    width: 5rem;
+    min-height: 2.5rem;
+    padding: 0.4rem 0.5rem;
+    border: 1.5px solid var(--trait-fort);
+    border-radius: var(--rayon-champ);
+    text-align: center;
+    font: inherit;
+    font-size: 1rem;
+}
+.champ-note:focus { outline: none; border-color: var(--nuit); box-shadow: 0 0 0 3px rgba(0, 49, 98, 0.18); }
+
+/* Les formulaires simples restent étroits (lecture confortable) ;
+   ceux qui contiennent un tableau (saisie de notes) gardent toute la largeur. */
+.contenu > form:not(.filtres):not(:has(.tableau)) { max-width: 40rem; }
+
+.filtres {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+.filtres .champ { flex: 1 1 10rem; margin-bottom: 0; }
+
+.lien-secondaire { margin: 1.25rem 0 0; color: var(--encre-douce); font-size: 0.9rem; }
+.lien-secondaire a { color: var(--nuit); font-weight: 500; }
+
+/* ============================================================
+   CONTENU : sous-titres, listes, tableaux
+   ============================================================ */
+.liste-classes-meta { margin: 0 0 0.75rem; color: var(--encre-douce); font-size: 0.85rem; }
+.liste-classes-meta a { color: var(--nuit); font-weight: 500; text-decoration: none; }
+.liste-classes-meta a:hover { text-decoration: underline; }
+
+.liste-classes { margin: 0.5rem 0 1.5rem; padding: 0; list-style: none; background: var(--surface); border: 1px solid var(--trait); border-radius: var(--rayon-panneau); }
+.liste-classes li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.3rem; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--trait); }
+.liste-classes li:last-child { border-bottom: 0; }
+.liste-classes li a { color: var(--nuit); font-weight: 500; text-decoration: none; }
+.liste-classes li a:hover { text-decoration: underline; }
+
 .tableau {
     width: 100%;
-    border-collapse: collapse;
-    margin: var(--espace-sm) 0 var(--espace-md) 0;
+    margin: 1rem 0 2rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--surface);
+    border: 1px solid var(--trait);
+    border-radius: var(--rayon-panneau);
+    overflow: hidden;
 }
-
 .tableau th {
+    padding: 0.7rem 1rem;
+    background: #F8FAFC;
+    border-bottom: 1px solid var(--trait);
+    color: var(--encre-douce);
+    font-size: 0.8rem;
+    font-weight: 500;
     text-align: left;
-    font-size: 0.85rem;
-    color: var(--couleur-encre-douce);
-    font-weight: 600;
-    padding: 0.5rem;
-    border-bottom: 1px solid var(--couleur-trait);
 }
+.tableau td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--trait); vertical-align: middle; }
+.tableau tbody tr:last-child td { border-bottom: 0; }
+.tableau tbody tr:hover { background: #FAFCFE; }
+.tableau td a { font-weight: 500; }
+.cellule-actions .groupe-actions { justify-content: flex-end; margin: 0; }
+.ligne-inactive { color: var(--encre-douce); background: #F6F8FB; }
 
-.tableau td {
-    padding: 0.5rem;
-    border-bottom: 1px solid var(--couleur-trait);
-}
-
-.tableau tbody tr:hover {
-    background: #F1ECE1;
-}
-
+/* Téléphone : chaque ligne devient une petite fiche empilée.
+   Chaque <td> porte un attribut data-label qui sert d'étiquette. */
 @media (max-width: 640px) {
+    .tableau { border: 0; background: none; border-radius: 0; overflow: visible; }
     .tableau thead {
-        /* On masque l'en-tête plutôt que de la supprimer : elle
-           reste lisible par les lecteurs d'écran (accessibilité),
-           juste invisible à l'affichage. */
         position: absolute;
         width: 1px;
         height: 1px;
         overflow: hidden;
         clip: rect(0, 0, 0, 0);
     }
-
-    .tableau, .tableau tbody, .tableau tr, .tableau td {
-        display: block;
-        width: 100%;
-    }
-
+    .tableau, .tableau tbody, .tableau tr, .tableau td { display: block; width: 100%; }
     .tableau tr {
-        margin-bottom: var(--espace-sm);
-        border: 1px solid var(--couleur-trait);
-        border-radius: var(--rayon);
-        padding: 0.4rem 0.6rem;
-        background: #FFFFFF;
+        margin-bottom: 0.75rem;
+        padding: 0.35rem 1rem;
+        background: var(--surface);
+        border: 1px solid var(--trait);
+        border-radius: var(--rayon-panneau);
     }
-
-    .tableau tbody tr:hover {
-        background: #FFFFFF;
-    }
-
+    .tableau tbody tr:hover { background: var(--surface); }
     .tableau td {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: var(--espace-sm);
+        gap: 1rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px dashed var(--trait);
         text-align: right;
-        border-bottom: 1px dashed var(--couleur-trait);
-        padding: 0.5rem 0;
     }
-
-    .tableau td:last-child {
-        border-bottom: none;
-    }
-
+    .tableau td:last-child { border-bottom: 0; }
     .tableau td::before {
         content: attr(data-label);
-        font-weight: 600;
-        font-size: 0.8rem;
-        color: var(--couleur-encre-douce);
+        flex: 0 0 auto;
+        color: var(--encre-douce);
+        font-size: 0.78rem;
+        font-weight: 500;
         text-align: left;
-        white-space: nowrap;
     }
-
-    /* Une cellule d'actions (boutons) n'a pas besoin d'étiquette
-       répétée ni de justification en deux colonnes : elle occupe
-       toute la largeur de la carte. */
-    .tableau td.cellule-actions {
-        justify-content: flex-start;
-    }
-
-    .tableau td.cellule-actions::before {
-        content: none;
-    }
+    .tableau td.cellule-actions { justify-content: flex-start; padding-top: 0.75rem; }
+    .tableau td.cellule-actions::before { content: none; }
+    .cellule-actions .groupe-actions { justify-content: flex-start; }
 }
 
-.champ-note {
-    width: 4.5rem;
-    padding: 0.4rem 0.5rem;
-    border: 1px solid var(--couleur-trait);
-    border-radius: var(--rayon);
-    text-align: center;
-    font-size: 1rem;
+.carte-etape {
+    margin-bottom: 1rem;
+    padding: 1rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--trait);
+    border-radius: var(--rayon-panneau);
 }
+.carte-etape h4 { margin: 0 0 0.5rem; }
 
-.champ-note:focus {
-    outline: 2px solid var(--couleur-accent);
-    outline-offset: 1px;
-}
-
-.ligne-inactive {
-    color: var(--couleur-encre-douce);
-    background: #F4F1E9;
-}
-
-/* --- Fiche élève : liste de définitions en deux colonnes --- */
 .fiche-info {
     display: grid;
     grid-template-columns: max-content 1fr;
-    gap: 0.4rem var(--espace-md);
-    margin: var(--espace-sm) 0 var(--espace-md) 0;
+    gap: 0.5rem 1.5rem;
+    margin: 1rem 0 2rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--trait);
+    border-radius: var(--rayon-panneau);
 }
+.fiche-info dt { color: var(--encre-douce); font-size: 0.85rem; }
+.fiche-info dd { margin: 0; overflow-wrap: anywhere; }
+.carte-etape .fiche-info { margin: 0; padding: 0; border: 0; background: none; }
 
 @media (min-width: 640px) {
-    .fiche-info {
-        grid-template-columns: 12rem 1fr;
-    }
+    .fiche-info { grid-template-columns: 12rem 1fr; }
 }
 
-.fiche-info dt {
-    color: var(--couleur-encre-douce);
-    font-size: 0.9rem;
+/* Pastilles : petites étiquettes d'état */
+.pastille {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.65rem;
+    border-radius: var(--rayon-pastille);
+    background: var(--nuit-pale);
+    color: var(--nuit);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.6;
 }
+.pastille-soleil { background: var(--soleil); color: var(--nuit); }
+.pastille-jaune  { background: var(--soleil-pale); color: #5B4500; }
+.pastille-verte  { background: var(--feuille-pale); color: var(--feuille-texte); }
 
-.fiche-info dd {
-    margin: 0;
+.vide {
+    padding: 1.25rem 1.1rem;
+    background: var(--surface);
+    border: 1px dashed var(--trait-fort);
+    border-radius: var(--rayon-panneau);
+    color: var(--encre-douce);
 }
+.vide p { margin: 0; }
 
-/* --- Barre de filtres (fiche élève) --- */
-.filtres {
+.section-entete {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
-    gap: var(--espace-sm);
-    margin: var(--espace-sm) 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin: 2rem 0 0.25rem;
 }
-
-.filtres .champ {
-    margin-bottom: 0;
-    min-width: 9rem;
-    flex: 1 1 9rem;
-}
+.section-entete h2 { margin: 0; }
 
 /* ============================================================
-   LARGES ÉCRANS (tablette / PC) : on donne un peu plus d'air
-   au contenu principal, sans jamais dépasser une largeur de
-   lecture confortable.
+   TABLEAU DE BORD : bandeau "Aujourd'hui"
    ============================================================ */
-@media (min-width: 1024px) {
-    .contenu {
-        max-width: 1000px;
-    }
+.jour {
+    margin: 0 0 1.5rem;
+    padding: 1.4rem 1.25rem 0.75rem;
+    background: var(--nuit);
+    color: #fff;
+    border-radius: var(--rayon-panneau);
 }
-
-/* --- Cartes d'étape (formset et affichage d'une fiche) --- */
-.carte-etape {
-    border: 1px solid var(--couleur-trait);
-    border-radius: var(--rayon);
-    padding: var(--espace-sm);
-    margin-bottom: var(--espace-sm);
-    background: #FFFFFF;
+.jour h1 { margin: 0 0 0.15rem; color: #fff; font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.1rem); }
+.jour-date { margin: 0 0 1rem; color: var(--sur-nuit-doux); }
+.jour-date::first-letter { text-transform: uppercase; }
+.jour-liste { margin: 0; padding: 0; list-style: none; }
+.cours {
+    display: grid;
+    grid-template-columns: 4.25rem 1fr;
+    gap: 0.15rem 1rem;
+    align-items: start;
+    padding: 0.85rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
-
-.carte-etape h4 {
-    margin: 0 0 var(--espace-xs) 0;
-    font-family: var(--police-texte);
-    font-size: 1rem;
-    color: var(--couleur-accent-fonce);
+.cours-heure { display: block; font-variant-numeric: tabular-nums; line-height: 1.3; }
+.cours-heure strong { display: block; font-size: 1.1rem; font-weight: 700; }
+.cours-heure small { display: block; color: var(--sur-nuit-doux); font-size: 0.8rem; }
+.cours-detail strong { display: block; font-weight: 700; }
+.cours-detail span { color: var(--sur-nuit-doux); font-size: 0.85rem; }
+.cours-meta {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    color: var(--sur-nuit-doux);
+    font-size: 0.85rem;
 }
-
-/* --- Logo dans l'en-tête --- */
-.entete-logo {
-    height: 34px;
-    width: auto;
-    display: block;
-}
+.cours-meta:empty { display: none; }
+.cours-passe { opacity: 0.55; }
+.cours-en_cours .cours-heure strong { color: var(--soleil); }
+.jour-vide { margin: 0; padding: 0.85rem 0 1rem; border-top: 1px solid rgba(255, 255, 255, 0.18); color: var(--sur-nuit-doux); }
 
 @media (min-width: 640px) {
-    .entete-logo {
-        height: 42px;
-    }
+    .jour { padding: 1.75rem 1.75rem 1rem; }
+    .cours { grid-template-columns: 5rem 1fr auto; align-items: center; }
+    .cours-meta { grid-column: auto; justify-content: flex-end; }
 }
-
 
 /* ============================================================
-PAGE D'ACCUEIL — MA CLASSE PRO
-============================================================ */
+   ÉCRANS DE CONNEXION / INSCRIPTION
+   ============================================================ */
+.ecran-auth {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 3.75rem);
+    min-height: calc(100dvh - 3.75rem);
+}
+.ecran-auth-panneau {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+    background: var(--nuit);
+    color: var(--sur-nuit-doux);
+}
+.ecran-auth-panneau h1 { max-width: 16ch; color: #fff; font-size: clamp(1.6rem, 1.2rem + 2vw, 2.4rem); }
+.ecran-auth-panneau p { max-width: 38ch; margin: 0; font-size: 1.02rem; }
+.ecran-auth-formulaire {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 1.5rem 3rem;
+}
+.ecran-auth-formulaire form { width: 100%; max-width: 26rem; }
+.ecran-auth-formulaire h2 { margin-bottom: 1.25rem; }
 
-.accueil-hero {
-border-bottom: 1px solid var(--couleur-trait);
-background: var(--couleur-panneau);
-color: var(--couleur-panneau-texte);
+@media (min-width: 900px) {
+    .ecran-auth { grid-template-columns: 5fr 6fr; }
+    .ecran-auth-panneau { padding: 3rem 3.5rem; }
+    .ecran-auth-formulaire { padding: 3rem 4rem; }
 }
 
+/* ============================================================
+   PAGE D'ACCUEIL
+   ============================================================ */
+.accueil-hero { background: var(--surface); border-bottom: 1px solid var(--trait); }
 .accueil-hero-contenu {
-max-width: 1000px;
-margin: 0 auto;
-padding: 4rem var(--espace-sm);
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+    max-width: 74rem;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 3rem;
+}
+.accueil-hero h1 { max-width: 16ch; font-size: clamp(2rem, 1.3rem + 3.2vw, 3.3rem); }
+.accueil-introduction { max-width: 34rem; color: var(--encre-douce); font-size: 1.05rem; }
+.accueil-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.5rem 0 1rem; }
+.accueil-inscription { margin: 0; color: var(--encre-douce); font-size: 0.9rem; }
+
+/* L'extrait de bulletin : l'image forte de la page */
+.apercu {
+    padding: 1.1rem 1rem 1rem;
+    background: var(--fond);
+    border: 1px solid var(--trait);
+    border-radius: var(--rayon-panneau);
+}
+.apercu-titre { margin: 0 0 0.15rem; color: var(--nuit); font-weight: 700; }
+.apercu-sous-titre { margin: 0 0 0.9rem; color: var(--encre-douce); font-size: 0.82rem; }
+.apercu table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--trait); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+.apercu th { padding: 0.5rem 0.4rem; background: var(--nuit); color: #fff; font-weight: 500; text-align: right; }
+.apercu th:first-child, .apercu td:first-child { text-align: left; padding-left: 0.7rem; }
+.apercu td { padding: 0.55rem 0.4rem; border-top: 1px solid var(--trait); text-align: right; }
+.apercu td.apercu-moy { font-weight: 700; color: var(--nuit); }
+.apercu tfoot td { background: var(--soleil-pale); border-top: 2px solid var(--soleil); font-weight: 700; }
+.apercu-formule { margin: 0.85rem 0 0; color: var(--encre-douce); font-size: 0.82rem; }
+
+@media (min-width: 900px) {
+    .accueil-hero-contenu { grid-template-columns: 1.05fr 0.95fr; gap: 4rem; padding: 4.5rem 2rem 5rem; }
+    .apercu { padding: 1.5rem; }
+    .apercu table { font-size: 0.9rem; }
 }
 
-@media (min-width: 640px) {
-.accueil-hero-contenu {
-padding: 6rem var(--espace-md);
+.accueil-presentation { max-width: 74rem; margin: 0 auto; padding: 3.5rem 1.25rem; }
+.accueil-section-titre { max-width: 40rem; margin-bottom: 2rem; }
+.accueil-section-titre p { color: var(--encre-douce); }
+.accueil-fonctionnalites { display: grid; gap: 0; border-top: 1px solid var(--trait-fort); }
+.accueil-fonctionnalite { padding: 1.4rem 0; border-bottom: 1px solid var(--trait); }
+.accueil-fonctionnalite svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-bottom: 0.6rem;
+    fill: none;
+    stroke: var(--nuit);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
-}
+.accueil-fonctionnalite h3 { margin: 0 0 0.35rem; }
+.accueil-fonctionnalite p { margin: 0; color: var(--encre-douce); }
 
-.accueil-sur-titre {
-margin: 0 0 var(--espace-sm);
-color: var(--couleur-accent);
-font-size: 0.78rem;
-font-weight: 700;
-letter-spacing: 0.12em;
-}
-
-.accueil-hero h1 {
-color: #FFFFFF;
-font-size: clamp(2.5rem, 8vw, 5rem);
-margin-bottom: var(--espace-sm);
-}
-
-.accueil-introduction {
-max-width: 620px;
-color: var(--couleur-panneau-texte);
-font-size: 1.05rem;
-line-height: 1.7;
-margin-bottom: var(--espace-md);
-}
-
-.accueil-actions {
-display: flex;
-flex-wrap: wrap;
-gap: 0.75rem;
-margin-bottom: var(--espace-sm);
-}
-
-.accueil-actions .bouton-secondaire {
-color: #FFFFFF;
-border-color: #687681;
-}
-
-.accueil-actions .bouton-secondaire:hover {
-color: var(--couleur-encre);
-}
-
-.accueil-inscription {
-margin: 0;
-font-size: 0.9rem;
-color: var(--couleur-panneau-texte);
-}
-
-.accueil-inscription a {
-color: #FFFFFF;
-}
-
-.accueil-presentation {
-max-width: 1000px;
-margin: 0 auto;
-padding: 3.5rem var(--espace-sm);
-}
-
-@media (min-width: 640px) {
-.accueil-presentation {
-padding: 5rem var(--espace-md);
-}
-}
-
-.accueil-section-titre {
-max-width: 680px;
-margin-bottom: var(--espace-lg);
-}
-
-.accueil-section-titre h2 {
-font-size: clamp(1.7rem, 4vw, 2.7rem);
-}
-
-.accueil-section-titre > p:last-child {
-color: var(--couleur-encre-douce);
-max-width: 620px;
-}
-
-.accueil-fonctionnalites {
-display: grid;
-grid-template-columns: 1fr;
-gap: 0;
-border-top: 1px solid var(--couleur-trait);
-}
-
-@media (min-width: 640px) {
-.accueil-fonctionnalites {
-grid-template-columns: 1fr 1fr;
-}
-}
-
-.accueil-fonctionnalite {
-padding: var(--espace-md) 0;
-border-bottom: 1px solid var(--couleur-trait);
-}
-
-@media (min-width: 640px) {
-.accueil-fonctionnalite {
-padding: var(--espace-md);
-}
-
-.accueil-fonctionnalite:nth-child(odd) {
-    padding-left: 0;
-    border-right: 1px solid var(--couleur-trait);
-}
-
-.accueil-fonctionnalite:nth-child(even) {
-    padding-right: 0;
-}
-
-}
-
-.accueil-numero {
-display: block;
-margin-bottom: var(--espace-xs);
-color: var(--couleur-accent);
-font-family: var(--police-titres);
-font-size: 1.1rem;
-}
-
-.accueil-fonctionnalite h3 {
-font-family: var(--police-titres);
-font-size: 1.35rem;
-}
-
-.accueil-fonctionnalite p {
-margin: 0;
-color: var(--couleur-encre-douce);
-max-width: 42ch;
+@media (min-width: 900px) {
+    .accueil-presentation { padding: 5rem 2rem; }
+    .accueil-fonctionnalites { grid-template-columns: repeat(4, 1fr); gap: 0 2rem; border-bottom: 1px solid var(--trait); }
+    .accueil-fonctionnalite { padding: 1.75rem 0 2rem; border-bottom: 0; }
 }
 
 .accueil-cta {
-max-width: 1000px;
-margin: 0 auto;
-padding: var(--espace-md) var(--espace-sm);
-border-top: 1px solid var(--couleur-trait);
-border-bottom: 1px solid var(--couleur-trait);
-
-display: flex;
-flex-direction: column;
-gap: var(--espace-md);
-
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    max-width: 74rem;
+    margin: 0 auto 3rem;
+    padding: 2rem 1.5rem;
+    background: var(--nuit);
+    color: var(--sur-nuit-doux);
+    border-radius: var(--rayon-panneau);
 }
+.accueil-cta h2 { margin: 0 0 0.35rem; color: #fff; }
+.accueil-cta p { margin: 0; }
+.accueil-cta .bouton { background: var(--soleil); border-color: var(--soleil); color: var(--nuit); }
+.accueil-cta .bouton:hover { background: #FFD233; border-color: #FFD233; color: var(--nuit); }
+.accueil-cta :focus-visible { outline-color: var(--soleil); }
 
-@media (min-width: 640px) {
-.accueil-cta {
-padding: var(--espace-md);
-flex-direction: row;
-align-items: center;
-justify-content: space-between;
+@media (min-width: 900px) {
+    .accueil-cta { margin: 0 auto 4rem; padding: 2.75rem 3rem; width: calc(100% - 4rem); }
 }
-}
-
-.accueil-cta h2 {
-margin-bottom: var(--espace-xs);
-font-size: 1.5rem;
-}
-
-.accueil-cta p {
-margin: 0;
-color: var(--couleur-encre-douce);
+@media (max-width: 899.98px) {
+    .accueil-cta { margin-left: 1.25rem; margin-right: 1.25rem; }
 }
 
 .accueil-pied {
-max-width: 1000px;
-margin: 0 auto;
-padding: var(--espace-md) var(--espace-sm);
+    padding: 1.5rem 1.25rem 2rem;
+    border-top: 1px solid var(--trait);
+    color: var(--encre-douce);
+    font-size: 0.85rem;
+    text-align: center;
+}
+.accueil-pied p { margin: 0; }
+.accueil-pied p:first-child { color: var(--nuit); font-weight: 700; }
 
-display: flex;
-flex-direction: column;
-gap: 0.25rem;
-
-color: var(--couleur-encre-douce);
-font-size: 0.82rem;
-
+/* ============================================================
+   IMPRESSION : seul le contenu de la page est imprimé
+   (fiches de préparation, bulletins affichés à l'écran...)
+   ============================================================ */
+@media print {
+    .sidebar, .topbar, .menu-voile, .pub-entete, .groupe-actions, .filtres, .lien-evitement { display: none !important; }
+    .app-shell { display: block; }
+    body { background: #fff; }
+    .app-contenu { padding: 0; }
+    .tableau, .carte-etape, .fiche-info { border-color: #999; }
 }
 
-@media (min-width: 640px) {
-.accueil-pied {
-padding: var(--espace-md);
-flex-direction: row;
-justify-content: space-between;
-}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
 
-.accueil-pied p {
-margin: 0;
+/* ============================================================
+   BARRE DE NAVIGATION DU BAS (téléphone uniquement)
+   Les 3 ou 4 destinations principales + un bouton "Menu" qui
+   ouvre le tiroir latéral (mot de passe, déconnexion...).
+   Sur tablette et PC, c'est la barre latérale qui prend le relais.
+   ============================================================ */
+.bottomnav { display: none; }
+
+@media (max-width: 899.98px) {
+    .bottomnav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 45;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        background: var(--surface);
+        border-top: 1px solid var(--trait);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bottomnav-lien {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.15rem;
+        min-height: 3.5rem;
+        padding: 0.4rem 0.25rem;
+        border: 0;
+        background: none;
+        color: var(--encre-douce);
+        font: inherit;
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .bottomnav-lien svg {
+        width: 1.4rem;
+        height: 1.4rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .bottomnav-lien[aria-current="page"] { color: var(--nuit); font-weight: 700; }
+    .bottomnav-lien[aria-current="page"]::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 30%;
+        right: 30%;
+        height: 3px;
+        border-radius: 0 0 3px 3px;
+        background: var(--soleil);
+    }
+    /* Le contenu ne doit pas passer sous la barre du bas */
+    .app-contenu { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+}
+
+/* ============================================================
+   ACCUEIL : section "Deux espaces" (enseignants / élèves)
+   ============================================================ */
+.apercu { margin: 0; }
+
+.accueil-espaces { max-width: 74rem; margin: 0 auto; padding: 0 1.25rem 3.5rem; }
+.accueil-espaces-grille { display: grid; gap: 1rem; }
+.espace {
+    padding: 1.5rem 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--trait);
+    border-radius: var(--rayon-panneau);
+}
+.espace-eleve { background: var(--nuit-pale); border-color: #C5D3E6; }
+.espace h3 { margin: 0 0 0.75rem; }
+.espace-liste { margin: 0 0 1.25rem; padding: 0; list-style: none; }
+.espace-liste li { position: relative; padding: 0.25rem 0 0.25rem 1.3rem; }
+.espace-liste li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.85rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--feuille);
+}
+.espace-note { margin: 0.9rem 0 0; color: var(--encre-douce); font-size: 0.85rem; }
+.espace .groupe-actions { margin-bottom: 0; }
+
+@media (min-width: 900px) {
+    .accueil-espaces { padding: 0 2rem 5rem; }
+    .accueil-espaces-grille { grid-template-columns: 1.25fr 1fr; gap: 1.5rem; }
+    .espace { padding: 2rem; }
+}
+
+/* Correctif : la colonne de grille peut rétrécir ; tableau d'exemple plus compact sur téléphone */
+.accueil-hero-contenu > * { min-width: 0; }
+.apercu table { font-size: 0.72rem; }
+.apercu th, .apercu td { padding-left: 0.3rem; padding-right: 0.3rem; }
+.apercu th:first-child, .apercu td:first-child { padding-left: 0.6rem; }
+@media (min-width: 640px) { .apercu table { font-size: 0.82rem; } .apercu th, .apercu td { padding-left: 0.4rem; padding-right: 0.4rem; } }
+@media (min-width: 900px) { .apercu table { font-size: 0.9rem; } }
+
+/* ============================================================
+   ACCUEIL : bloc final "Choisissez votre espace"
+   (remplace l'ancien bandeau .accueil-cta)
+   ============================================================ */
+.apercu-defile { overflow-x: auto; }
+.apercu-defile table { min-width: 0; }
+.apercu th { white-space: nowrap; }
+.apercu tfoot td:first-child { padding-left: 0.7rem; }
+
+.accueil-acces {
+    max-width: 74rem;
+    margin: 0 1.25rem 3rem;
+    padding: 2rem 1.5rem 1.5rem;
+    background: var(--nuit);
+    color: var(--sur-nuit-doux);
+    border-radius: var(--rayon-panneau);
+}
+.accueil-acces h2 { margin: 0 0 0.35rem; color: #fff; }
+.accueil-acces h3 { margin: 0 0 0.4rem; color: #fff; font-size: 1.1rem; }
+.accueil-acces-intro { margin: 0 0 1.5rem; }
+.accueil-acces-grille { display: grid; gap: 0; }
+.accueil-acces-bloc { padding: 1.4rem 0; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+.accueil-acces-bloc p { max-width: 36rem; }
+.accueil-acces-note { margin: 0.5rem 0 0; font-size: 0.85rem; }
+.accueil-acces .bouton { background: var(--soleil); border-color: var(--soleil); color: var(--nuit); }
+.accueil-acces .bouton:hover { background: #FFD233; border-color: #FFD233; color: var(--nuit); }
+.accueil-acces .bouton-secondaire { background: transparent; border-color: rgba(255, 255, 255, 0.55); color: #fff; }
+.accueil-acces .bouton-secondaire:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; color: #fff; }
+.accueil-acces :focus-visible { outline-color: var(--soleil); }
+
+@media (min-width: 900px) {
+    .accueil-acces { margin: 0 auto 4rem; width: calc(100% - 4rem); padding: 3rem 3rem 2rem; }
+    .accueil-acces-grille { grid-template-columns: 1fr 1fr; gap: 0 3rem; }
+}
+
+/* Extrait de bulletin : le tableau doit tenir en entier sur un petit téléphone */
+@media (max-width: 899.98px) {
+    .apercu { padding: 0.9rem 0.65rem; }
+    .apercu table { font-size: 0.72rem; }
+    .apercu th, .apercu td { padding-left: 0.25rem; padding-right: 0.25rem; }
+    .apercu th:first-child, .apercu td:first-child { padding-left: 0.5rem; }
 }

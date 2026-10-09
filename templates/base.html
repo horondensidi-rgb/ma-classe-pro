@@ -1,67 +1,192 @@
-{% load static %}
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block titre %} TeachMali {% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#003162">
+    <title>{% block titre %}TeachMali — Gestion scolaire{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'comptes/img/icone_tm_64.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'comptes/img/apple-touch-icon.png' %}">
     <link rel="stylesheet" href="{% static 'comptes/css/style.css' %}">
 </head>
 <body>
+{% if user.is_authenticated %}
+    {% if user.profil_eleve %}
+        {% url 'evaluations:eleve_tableau_bord' as url_accueil %}
+    {% else %}
+        {% url 'comptes:tableau_bord' as url_accueil %}
+    {% endif %}
+    {# user.profil_eleve / user.profil_enseignant : si la relation n'existe #}
+    {# pas, le template renvoie "faux" au lieu de planter. #}
 
-    <header class="entete">
-        {% if user.profil_eleve %}
-            <a href="{% url 'evaluations:eleve_tableau_bord' %}" class="entete-marque">
-                <img src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" class="entete-logo">
-            </a>
-        {% elif user.is_authenticated %}
-            <a href="{% url 'comptes:tableau_bord' %}" class="entete-marque">
-                <img src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" class="entete-logo">
-            </a>
-        {% else %}
-            {# Visiteur anonyme (page d'accueil publique) : le logo   #}
-            {# renvoie vers la racine du site, pas vers une page qui  #}
-            {# exigerait une connexion. #}
-            <a href="/" class="entete-marque">
-                <img src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" class="entete-logo">
-            </a>
-        {% endif %}
-        {# user.profil_eleve / user.profil_enseignant : si la relation    #}
-        {# n'existe pas pour cet utilisateur, Django templates renvoient  #}
-        {# silencieusement une valeur "fausse" plutôt qu'une erreur — pas #}
-        {# besoin de try/except ici, contrairement au code Python.       #}
+    <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 
-        <nav class="entete-nav">
-            {% if user.is_authenticated %}
-                <span class="entete-utilisateur">{{ user.first_name|default:user.username }}</span>
-                <a href="{% url 'comptes:changer_mot_de_passe' %}">Mot de passe</a>
-                <!--
-                    Le formulaire ci-dessous sert uniquement à la
-                    déconnexion : depuis Django 5, LogoutView refuse
-                    les requêtes GET (un simple lien <a> ne suffit
-                    plus), il faut un vrai POST avec jeton CSRF.
-                -->
-                <form method="post" action="{% url 'comptes:deconnexion' %}" class="entete-deconnexion">
+    <div class="app-shell">
+
+        {# ---------- Barre latérale (PC/tablette) et tiroir (téléphone) ---------- #}
+        <aside class="sidebar" id="menu-lateral" aria-label="Menu principal">
+            <a class="sidebar-marque" href="{{ url_accueil }}">
+                <img class="sidebar-logo" src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" width="168" height="45">
+            </a>
+
+            <nav class="sidebar-nav">
+                {% if user.profil_eleve %}
+                    <p class="sidebar-groupe">Mon espace</p>
+                    <a class="nav-lien" href="{% url 'evaluations:eleve_tableau_bord' %}"
+                       {% if request.resolver_match.namespace == 'evaluations' %}aria-current="page"{% endif %}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+                        <span>Mes évaluations</span>
+                    </a>
+                {% elif user.profil_enseignant %}
+                    <p class="sidebar-groupe">Enseignement</p>
+                    <a class="nav-lien" href="{% url 'comptes:tableau_bord' %}"
+                       {% if request.resolver_match.view_name == 'comptes:tableau_bord' %}aria-current="page"{% endif %}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                        <span>Tableau de bord</span>
+                    </a>
+                    <a class="nav-lien" href="{% url 'classes:liste_classes' %}"
+                       {% if request.resolver_match.namespace == 'classes' or request.resolver_match.namespace == 'bulletins' or request.resolver_match.namespace == 'evaluations' %}aria-current="page"{% endif %}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span>Mes classes</span>
+                    </a>
+                    <a class="nav-lien" href="{% url 'pedagogie:mes_fiches' %}"
+                       {% if request.resolver_match.namespace == 'pedagogie' %}aria-current="page"{% endif %}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                        <span>Mes fiches</span>
+                    </a>
+                {% endif %}
+
+                <p class="sidebar-groupe">Compte</p>
+                <a class="nav-lien" href="{% url 'comptes:changer_mot_de_passe' %}"
+                   {% if request.resolver_match.view_name == 'comptes:changer_mot_de_passe' %}aria-current="page"{% endif %}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span>Mot de passe</span>
+                </a>
+                {% if user.is_staff %}
+                    <a class="nav-lien" href="{% url 'admin:index' %}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+                        <span>Administration</span>
+                    </a>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-pied">
+                <div class="profil">
+                    <span class="avatar" aria-hidden="true">{{ user.first_name|default:user.username|slice:":1"|upper }}</span>
+                    <div class="profil-texte">
+                        <span class="profil-nom">{{ user.get_full_name|default:user.username }}</span>
+                        <span class="profil-role">{% if user.profil_eleve %}Élève{% elif user.profil_enseignant %}Enseignant{% elif user.is_superuser %}Administrateur{% else %}Utilisateur{% endif %}</span>
+                    </div>
+                </div>
+                {# Déconnexion : depuis Django 5, elle exige un POST (donc un formulaire) #}
+                <form method="post" action="{% url 'comptes:deconnexion' %}">
                     {% csrf_token %}
-                    <button type="submit">Se déconnecter</button>
+                    <button type="submit" class="nav-lien">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+                        <span>Se déconnecter</span>
+                    </button>
                 </form>
-            {% else %}
-                <a href="{% url 'comptes:connexion' %}">Se connecter</a>
+            </div>
+        </aside>
+        <div class="menu-voile" data-menu-fermer></div>
+
+        <div class="app-main">
+            {# ---------- Barre du haut (téléphone) : logo seul ---------- #}
+            <header class="topbar">
+                <a class="topbar-marque" href="{{ url_accueil }}">
+                    <img class="topbar-logo" src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" width="120" height="32">
+                </a>
+            </header>
+
+            <main class="app-contenu" id="contenu">
+{% else %}
+    {# ---------- Visiteur non connecté : en-tête public ---------- #}
+    <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+    <header class="pub-entete">
+        <a href="/"><img class="pub-logo" src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" width="168" height="45"></a>
+        <nav class="pub-nav" aria-label="Connexion">
+            {% if request.resolver_match.view_name != 'comptes:eleve_connexion' %}
+                <a href="{% url 'comptes:eleve_connexion' %}">Espace élève</a>
+            {% endif %}
+            {% if request.resolver_match.view_name != 'comptes:connexion' %}
+                <a href="{% url 'comptes:connexion' %}" class="bouton bouton-petit">Espace enseignant</a>
             {% endif %}
         </nav>
     </header>
+    <main class="page-publique" id="contenu">
+{% endif %}
 
-    <main>
         {% if messages %}
-            <div class="contenu">
+            <ul class="messages" role="status">
                 {% for message in messages %}
-                    <p class="message-flash">{{ message }}</p>
+                    <li class="message-flash message-{{ message.tags }}">{{ message }}</li>
                 {% endfor %}
-            </div>
+            </ul>
         {% endif %}
-        {% block contenu %}
-        {% endblock %}
+
+        {% block contenu %}{% endblock %}
     </main>
 
+{% if user.is_authenticated %}
+        </div>{# fin .app-main #}
+    </div>{# fin .app-shell #}
+
+    {# ---------- Barre de navigation du bas (téléphone) ---------- #}
+    <nav class="bottomnav" aria-label="Navigation rapide">
+        {% if user.profil_eleve %}
+            <a class="bottomnav-lien" href="{% url 'evaluations:eleve_tableau_bord' %}"
+               {% if request.resolver_match.namespace == 'evaluations' %}aria-current="page"{% endif %}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+                <span>Évaluations</span>
+            </a>
+        {% elif user.profil_enseignant %}
+            <a class="bottomnav-lien" href="{% url 'comptes:tableau_bord' %}"
+               {% if request.resolver_match.view_name == 'comptes:tableau_bord' %}aria-current="page"{% endif %}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                <span>Accueil</span>
+            </a>
+            <a class="bottomnav-lien" href="{% url 'classes:liste_classes' %}"
+               {% if request.resolver_match.namespace == 'classes' or request.resolver_match.namespace == 'bulletins' or request.resolver_match.namespace == 'evaluations' %}aria-current="page"{% endif %}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Classes</span>
+            </a>
+            <a class="bottomnav-lien" href="{% url 'pedagogie:mes_fiches' %}"
+               {% if request.resolver_match.namespace == 'pedagogie' %}aria-current="page"{% endif %}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                <span>Fiches</span>
+            </a>
+        {% endif %}
+        <button type="button" class="bottomnav-lien" id="menu-ouvrir" aria-controls="menu-lateral" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+            <span>Menu</span>
+        </button>
+    </nav>
+
+    <script>
+    (function () {
+        var corps = document.body;
+        var bouton = document.getElementById('menu-ouvrir');
+        var menu = document.getElementById('menu-lateral');
+        if (!bouton || !menu) return;
+        function definir(ouvert) {
+            corps.classList.toggle('menu-ouvert', ouvert);
+            bouton.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+            if (ouvert) { var premier = menu.querySelector('a, button'); if (premier) premier.focus(); }
+            else { bouton.focus(); }
+        }
+        bouton.addEventListener('click', function () { definir(!corps.classList.contains('menu-ouvert')); });
+        document.querySelectorAll('[data-menu-fermer]').forEach(function (el) {
+            el.addEventListener('click', function () { definir(false); });
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && corps.classList.contains('menu-ouvert')) definir(false);
+        });
+        // Passage à un grand écran : le menu est déjà visible, on referme l'état "tiroir"
+        window.matchMedia('(min-width: 900px)').addEventListener('change', function (e) {
+            if (e.matches) corps.classList.remove('menu-ouvert');
+        });
+    })();
+    </script>
+{% endif %}
 </body>
 </html>

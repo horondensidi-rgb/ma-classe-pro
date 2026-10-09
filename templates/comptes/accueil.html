@@ -4,123 +4,131 @@
 
 {% block contenu %}
 
+{# ---------- Présentation ---------- #}
 <section class="accueil-hero">
-    <div class="accueil-hero-contenu">    <p class="accueil-sur-titre">OUTIL DE GESTION SCOLAIRE</p>
+    <div class="accueil-hero-contenu">
+        <div>
+            <h1>Gérez votre classe, de la préparation au bulletin.</h1>
+            <p class="accueil-introduction">
+                Une plateforme pensée pour simplifier le travail quotidien
+                des enseignants et faciliter le suivi pédagogique des élèves.
+            </p>
 
-    <h1>TeachMali</h1>
+            <div class="accueil-actions">
+                <a href="{% url 'comptes:connexion' %}" class="bouton">Espace enseignant</a>
+                <a href="{% url 'comptes:eleve_connexion' %}" class="bouton-secondaire">Espace élève</a>
+            </div>
 
-    <p class="accueil-introduction">
-        Une plateforme pensée pour simplifier le travail quotidien
-        des enseignants et faciliter le suivi pédagogique des élèves.
-    </p>
+            <p class="accueil-inscription">
+                Vous êtes enseignant et vous n'avez pas encore de compte ?
+                <a href="{% url 'comptes:inscription' %}">Créer un compte enseignant</a>
+            </p>
+        </div>
 
-    <div class="accueil-actions">
-        <a href="{% url 'comptes:connexion' %}" class="bouton">
-            Se connecter
-        </a>
+        {# Extrait de bulletin : exemple fictif, calculé avec la formule malienne #}
+        <div class="apercu" aria-label="Exemple de bulletin calculé automatiquement">
+            <p class="apercu-titre">Le bulletin se calcule tout seul</p>
+            <p class="apercu-sous-titre">Exemple fictif, 1er trimestre</p>
+            <div class="apercu-defile">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Discipline</th>
+                            <th>Classe</th>
+                            <th>Compo</th>
+                            <th>Moy.</th>
+                            <th>Coef</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Français</td><td>14</td><td>15</td><td class="apercu-moy">14,67</td><td>4</td><td>58,67</td></tr>
+                        <tr><td>Maths</td><td>11</td><td>13</td><td class="apercu-moy">12,33</td><td>3</td><td>37,00</td></tr>
+                        <tr><td>Hist.-Géo</td><td>15</td><td>12</td><td class="apercu-moy">13,00</td><td>2</td><td>26,00</td></tr>
+                    </tbody>
+                    <tfoot>
+                        <tr><td colspan="4">Moyenne générale (sur 20)</td><td>9</td><td>13,52</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+            <p class="apercu-formule">
+                Moyenne d'une matière = (note de classe + 2 × composition) ÷ 3.
+                Total = moyenne × coefficient. Moyenne générale = somme des totaux ÷ somme des coefficients.
+            </p>
+        </div>
+    </div>
+</section>
 
-        <a href="{% url 'comptes:eleve_connexion' %}" class="bouton-secondaire">
-            Espace élève
-        </a>
+{# ---------- Fonctionnalités ---------- #}
+<section class="accueil-presentation">
+    <div class="accueil-section-titre">
+        <h2>Tout ce dont vous avez besoin pour organiser votre classe.</h2>
+        <p>
+            TeachMali rassemble dans un même espace les principaux
+            outils nécessaires au suivi pédagogique et à l'organisation
+            du travail de l'enseignant.
+        </p>
     </div>
 
-    <p class="accueil-inscription">
-        Vous êtes enseignant et vous n'avez pas encore de compte ?
-        <a href="{% url 'comptes:inscription' %}">
-            Créer un compte enseignant
-        </a>
-    </p>
+    <div class="accueil-fonctionnalites">
+        <article class="accueil-fonctionnalite">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h3>Mes classes</h3>
+            <p>Organisez vos classes et retrouvez rapidement les élèves dont vous assurez le suivi.</p>
+        </article>
 
-</div>
+        <article class="accueil-fonctionnalite">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+            <h3>Évaluations</h3>
+            <p>Saisissez et consultez les évaluations afin de suivre progressivement les résultats de vos élèves.</p>
+        </article>
 
-</section><section class="accueil-presentation"><div class="accueil-section-titre">
-    <p class="accueil-sur-titre">UNE GESTION PLUS SIMPLE</p>
+        <article class="accueil-fonctionnalite">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+            <h3>Bulletins</h3>
+            <p>Centralisez les résultats scolaires et préparez plus facilement les bulletins de vos élèves.</p>
+        </article>
 
-    <h2>
-        Tout ce dont vous avez besoin pour organiser votre classe.
-    </h2>
+        <article class="accueil-fonctionnalite">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <h3>Préparations</h3>
+            <p>Organisez vos fiches de préparation et gardez une vision claire de vos activités pédagogiques à venir.</p>
+        </article>
+    </div>
+</section>
 
-    <p>
-        TeachMali rassemble dans un même espace les principaux
-        outils nécessaires au suivi pédagogique et à l'organisation
-        du travail de l'enseignant.
-    </p>
-</div>
+{# ---------- Choix de l'espace ---------- #}
+<section class="accueil-acces" aria-labelledby="titre-acces">
+    <h2 id="titre-acces">Votre classe, votre travail, un seul espace.</h2>
+    <p class="accueil-acces-intro">Choisissez votre espace pour continuer.</p>
 
+    <div class="accueil-acces-grille">
+        <div class="accueil-acces-bloc">
+            <h3>Je suis enseignant</h3>
+            <p>Gérez vos classes, préparez vos fiches, saisissez les notes et éditez les bulletins.</p>
+            <div class="groupe-actions">
+                <a href="{% url 'comptes:connexion' %}" class="bouton">Se connecter</a>
+                <a href="{% url 'comptes:inscription' %}" class="bouton-secondaire">Créer un compte</a>
+            </div>
+        </div>
 
-<div class="accueil-fonctionnalites">
+        <div class="accueil-acces-bloc">
+            <h3>Je suis élève</h3>
+            <p>
+                Connecte-toi avec ton matricule et le code remis par ton enseignant
+                pour répondre à tes évaluations en ligne et voir tes résultats.
+            </p>
+            <div class="groupe-actions">
+                <a href="{% url 'comptes:eleve_connexion' %}" class="bouton">Se connecter</a>
+            </div>
+            <p class="accueil-acces-note">Pas encore de code ? Demande-le à ton enseignant.</p>
+        </div>
+    </div>
+</section>
 
-    <article class="accueil-fonctionnalite">
-        <span class="accueil-numero">01</span>
+<footer class="accueil-pied">
+    <p>TeachMali</p>
+    <p>Outil numérique de gestion et de suivi pédagogique.</p>
+</footer>
 
-        <h3>Mes classes</h3>
-
-        <p>
-            Organisez vos classes et retrouvez rapidement les élèves
-            dont vous assurez le suivi.
-        </p>
-    </article>
-
-
-    <article class="accueil-fonctionnalite">
-        <span class="accueil-numero">02</span>
-
-        <h3>Évaluations</h3>
-
-        <p>
-            Saisissez et consultez les évaluations afin de suivre
-            progressivement les résultats de vos élèves.
-        </p>
-    </article>
-
-
-    <article class="accueil-fonctionnalite">
-        <span class="accueil-numero">03</span>
-
-        <h3>Bulletins</h3>
-
-        <p>
-            Centralisez les résultats scolaires et préparez plus
-            facilement les bulletins de vos élèves.
-        </p>
-    </article>
-
-
-    <article class="accueil-fonctionnalite">
-        <span class="accueil-numero">04</span>
-
-        <h3>Préparations</h3>
-
-        <p>
-            Organisez vos fiches de préparation et gardez une vision
-            claire de vos activités pédagogiques à venir.
-        </p>
-    </article>
-
-</div>
-
-</section><section class="accueil-cta"><div>
-    <p class="accueil-sur-titre">COMMENCER</p>
-
-    <h2>
-        Votre classe, votre travail, un seul espace.
-    </h2>
-
-    <p>
-        Connectez-vous pour accéder à votre espace de travail.
-    </p>
-</div>
-
-<a href="{% url 'comptes:connexion' %}" class="bouton">
-    Accéder à mon espace
-</a>
-
-</section><footer class="accueil-pied"><p>
-    TeachMali
-</p>
-
-<p>
-    Outil numérique de gestion et de suivi pédagogique.
-</p>
-
-</footer>{% endblock %}
+{% endblock %}
