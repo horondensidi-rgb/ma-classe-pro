@@ -228,3 +228,6 @@ def tableau_bord_view(request):
         'nb_fiches_a_venir': nb_fiches_a_venir,
         'nb_evaluations_en_ligne': nb_evaluations_en_ligne,
     })
+
+def accueil_view(request):
+    return render(request, 'comptes/accueil.html')
