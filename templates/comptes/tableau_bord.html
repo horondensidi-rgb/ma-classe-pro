@@ -4,29 +4,99 @@
 
 {% block contenu %}
 <div class="contenu">
-    <h2>Bonjour, {{ user.first_name }}</h2>
+
+    {# ---------- Bandeau "Aujourd'hui" : les cours du jour ---------- #}
+    <section class="jour" aria-labelledby="titre-jour">
+        <h1 id="titre-jour">Bonjour, {{ user.first_name|default:user.username }}</h1>
+        <p class="jour-date">{% now "l j F Y" %}</p>
+
+        {% if cours_du_jour %}
+            <ul class="jour-liste">
+                {% for cours in cours_du_jour %}
+                    <li class="cours cours-{{ cours.etat }}">
+                        <span class="cours-heure">
+                            <strong>{{ cours.heure_debut|time:"H:i" }}</strong>
+                            <small>{{ cours.heure_fin|time:"H:i" }}</small>
+                        </span>
+                        <span class="cours-detail">
+                            <strong>{{ cours.classe_matiere.matiere.nom }}</strong>
+                            <span>{{ cours.classe_matiere.classe.nom }}</span>
+                        </span>
+                        <span class="cours-meta">
+                            {% if cours.salle %}<span>Salle {{ cours.salle }}</span>{% endif %}
+                            {% if cours.etat == 'en_cours' %}<span class="pastille pastille-soleil">En cours</span>{% endif %}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="jour-vide">
+                Aucun cours prévu aujourd'hui. L'emploi du temps se renseigne
+                depuis la page de chaque classe.
+            </p>
+        {% endif %}
+    </section>
+
+    {# ---------- Mes classes, avec l'effectif garçons / filles ---------- #}
+    <div class="section-entete">
+        <h2>Mes classes</h2>
+        <a href="{% url 'classes:liste_classes' %}" class="bouton-secondaire bouton-petit">Toutes mes classes</a>
+    </div>
 
     {% if classes %}
-        <p>Vous intervenez dans {{ classes|length }} classe(s) :</p>
-
-        <ul class="liste-classes">
-            {% for classe in classes %}
-                <li>
-                    <a href="{% url 'classes:detail_classe' classe.id %}">
-                        {{ classe.nom }}
-                    </a>
-                    <span class="liste-classes-meta">{{ classe.annee_scolaire.libelle }}</span>
-                </li>
-            {% endfor %}
-        </ul>
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Niveau</th>
+                    <th>Garçons</th>
+                    <th>Filles</th>
+                    <th>Effectif</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for classe in classes %}
+                    <tr>
+                        <td data-label="Classe"><strong>{{ classe.nom }}</strong></td>
+                        <td data-label="Niveau">{{ classe.get_niveau_display }}</td>
+                        <td data-label="Garçons">{{ classe.nb_garcons }}</td>
+                        <td data-label="Filles">{{ classe.nb_filles }}</td>
+                        <td data-label="Effectif"><strong>{{ classe.nb_eleves }}</strong></td>
+                        <td class="cellule-actions">
+                            <a href="{% url 'classes:detail_classe' classe.id %}" class="bouton-secondaire bouton-petit">Ouvrir</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td data-label="Classe"><strong>Total</strong></td>
+                    <td data-label="Niveau"></td>
+                    <td data-label="Garçons"><strong>{{ nb_garcons }}</strong></td>
+                    <td data-label="Filles"><strong>{{ nb_filles }}</strong></td>
+                    <td data-label="Effectif"><strong>{{ nb_eleves }}</strong></td>
+                    <td class="cellule-actions"></td>
+                </tr>
+            </tfoot>
+        </table>
     {% else %}
-        <p>
-            Vous n'êtes rattaché à aucune classe pour le moment.
-            Contactez votre administrateur au +22394013226.
-        </p>
+        <div class="vide">
+            <p>
+                Vous n'êtes rattaché à aucune classe pour le moment.
+                Contactez votre administrateur pour qu'il vous attribue une matière.
+            </p>
+        </div>
     {% endif %}
 
-    <h3>Prochaines fiches de préparation</h3>
+    {# ---------- Prochaines fiches de préparation ---------- #}
+    <div class="section-entete">
+        <h2>Prochaines fiches</h2>
+        <div class="groupe-actions">
+            <a href="{% url 'pedagogie:choisir_matiere' %}" class="bouton bouton-petit">+ Nouvelle fiche</a>
+            <a href="{% url 'pedagogie:mes_fiches' %}" class="bouton-secondaire bouton-petit">Toutes mes fiches</a>
+        </div>
+    </div>
 
     {% if prochaines_fiches %}
         <table class="tableau">
@@ -54,9 +124,7 @@
             </tbody>
         </table>
     {% else %}
-        <p>Aucune fiche à venir pour le moment.</p>
+        <div class="vide"><p>Aucune fiche à venir pour le moment.</p></div>
     {% endif %}
-
-    <a href="{% url 'pedagogie:mes_fiches' %}" class="bouton-secondaire">Voir toutes mes fiches</a>
 </div>
 {% endblock %}

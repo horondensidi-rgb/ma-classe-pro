@@ -2,6 +2,8 @@
    TeachMali : feuille de style principale
    Fichier : static/comptes/css/style.css
 
+   NNNNNNNN
+   
    Principes (à garder en tête si tu modifies ce fichier) :
    - Palette tirée du logo : nuit (encre du cahier), soleil (surligneur),
      feuille (validation). Le jaune n'est JAMAIS utilisé comme couleur
@@ -553,7 +555,7 @@ img { max-width: 100%; }
         overflow: hidden;
         clip: rect(0, 0, 0, 0);
     }
-    .tableau, .tableau tbody, .tableau tr, .tableau td { display: block; width: 100%; }
+    .tableau, .tableau tbody, .tableau tfoot, .tableau tr, .tableau td { display: block; width: 100%; }
     .tableau tr {
         margin-bottom: 0.75rem;
         padding: 0.35rem 1rem;
@@ -993,4 +995,14 @@ img { max-width: 100%; }
     .apercu table { font-size: 0.72rem; }
     .apercu th, .apercu td { padding-left: 0.25rem; padding-right: 0.25rem; }
     .apercu th:first-child, .apercu td:first-child { padding-left: 0.5rem; }
+}
+
+/* Ligne de total en bas d'un tableau */
+.tableau tfoot td { background: #F8FAFC; border-top: 2px solid var(--trait-fort); border-bottom: 0; }
+
+/* Téléphone : cellules vides masquées, ligne de total mise en valeur */
+@media (max-width: 640px) {
+    .tableau td:empty { display: none; }
+    .tableau tfoot tr { background: #F8FAFC; }
+    .tableau tfoot td { background: none; border-top: 0; }
 }

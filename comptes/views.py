@@ -134,38 +134,97 @@ def tableau_bord_view(request):
             "Connectez-vous avec un compte créé via la page d'inscription, "
             "ou associez ce compte à un Enseignant depuis l'admin."
         )
-        return render(request, 'comptes/tableau_bord.html', {'classes': []})
+        return render(request, 'comptes/tableau_bord.html', {'classes': [], 'sans_profil': True})
 
-    classes = Classe.objects.filter(
-        Q(enseignant_principal=enseignant) | Q(classematiere__enseignant=enseignant)
-    ).distinct()
-
-    from django.db.models import F
+    from django.db.models import Count, F
     from django.utils import timezone
+    from classes.models import Creneau, Eleve
+    from evaluations.models import Evaluation
     from pedagogie.models import FichePreparation
-    # Mêmes raisons d'import local qu'au-dessus : éviter tout risque
-    # d'import circulaire avec une app qui dépend elle-même de comptes.
+    # Imports locaux pour la même raison qu'au-dessus : éviter tout
+    # risque d'import circulaire avec des apps qui dépendent de comptes.
 
-    prochaines_fiches = FichePreparation.objects.filter(
+    classes = list(
+        Classe.objects.filter(
+            Q(enseignant_principal=enseignant) | Q(classematiere__enseignant=enseignant)
+        ).distinct().select_related('annee_scolaire')
+    )
+
+    # Effectif actif de chaque classe, séparé garçons / filles, en UNE
+    # seule requête groupée (plutôt que deux requêtes par classe
+    # affichée). .order_by() vide neutralise le tri par défaut du
+    # modèle Eleve, qui fausserait le regroupement.
+    comptages = (
+        Eleve.objects.filter(classe__in=classes, est_actif=True)
+        .order_by()
+        .values_list('classe', 'sexe')
+        .annotate(n=Count('id'))
+    )
+    effectifs = {}
+    for classe_id, sexe, n in comptages:
+        effectifs.setdefault(classe_id, {'M': 0, 'F': 0})[sexe] = n
+
+    nb_garcons = nb_filles = 0
+    for classe in classes:
+        e = effectifs.get(classe.id, {'M': 0, 'F': 0})
+        classe.nb_garcons = e['M']
+        classe.nb_filles = e['F']
+        classe.nb_eleves = e['M'] + e['F']
+        nb_garcons += classe.nb_garcons
+        nb_filles += classe.nb_filles
+
+    # Cours du jour : les créneaux de l'emploi du temps de CET enseignant
+    # pour le jour de la semaine actuel, avec leur état (passé, en cours,
+    # à venir) pour mettre en valeur le cours qui se déroule maintenant.
+    maintenant = timezone.localtime()
+    codes_jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
+    cours_du_jour = list(
+        Creneau.objects.filter(
+            classe_matiere__enseignant=enseignant,
+            jour_semaine=codes_jours[maintenant.weekday()],
+        ).select_related('classe_matiere__classe', 'classe_matiere__matiere')
+        .order_by('heure_debut')
+    )
+    heure = maintenant.time()
+    for cours in cours_du_jour:
+        if cours.heure_fin <= heure:
+            cours.etat = 'passe'
+        elif cours.heure_debut <= heure:
+            cours.etat = 'en_cours'
+        else:
+            cours.etat = 'a_venir'
+
+    fiches_a_venir = FichePreparation.objects.filter(
         enseignant=enseignant,
     ).filter(
         Q(date_prevue__gte=timezone.localdate()) | Q(date_prevue__isnull=True)
         # On montre les fiches à venir OU sans date encore fixée —
         # PAS celles déjà passées, qui n'ont plus d'intérêt sur un
         # tableau de bord tourné vers "ce qui arrive".
-    ).select_related(
+    )
+    nb_fiches_a_venir = fiches_a_venir.count()
+    prochaines_fiches = fiches_a_venir.select_related(
         'classe_matiere__classe', 'classe_matiere__matiere'
     ).order_by(
         F('date_prevue').asc(nulls_last=True)
     )[:5]
-    # [:5] : seulement un aperçu ici : la liste complète reste
-    # accessible via le lien "Voir toutes mes fiches" du template.
+    # [:5] : seulement un aperçu ; la liste complète reste accessible
+    # via le lien "Toutes mes fiches" du template.
+
+    nb_evaluations_en_ligne = Evaluation.objects.filter(
+        classe_matiere__enseignant=enseignant,
+        est_en_ligne=True,
+        statut='PUBLIEE',
+    ).count()
 
     return render(request, 'comptes/tableau_bord.html', {
         'classes': classes,
         'prochaines_fiches': prochaines_fiches,
+        'nb_classes': len(classes),
+        'nb_eleves': nb_garcons + nb_filles,
+        'nb_garcons': nb_garcons,
+        'nb_filles': nb_filles,
+        'cours_du_jour': cours_du_jour,
+        'nb_fiches_a_venir': nb_fiches_a_venir,
+        'nb_evaluations_en_ligne': nb_evaluations_en_ligne,
     })
-	
-	
-def accueil_view(request):
-    return render(request, 'comptes/accueil.html')
