@@ -41,8 +41,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY') or (
 # DEBUG : False par défaut (sûr). En local, si tu veux retrouver les
 # pages d'erreur détaillées de Django pendant le développement, crée
 # un fichier .env contenant la ligne : DEBUG=True
-#DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+#DEBUG = True
 # ALLOWED_HOSTS : liste séparée par des virgules dans la variable
 # d'environnement, ex: "monecole.onrender.com,monecole.ml"
 # Les valeurs de secours couvrent le développement local (Termux,
