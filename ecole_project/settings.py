@@ -64,10 +64,13 @@ if os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
 # de formulaire échoue avec "Forbidden (403) CSRF verification
 # failed" — la page de connexion s'affiche, mais impossible de
 # jamais se connecter.
+#CSRF_TRUSTED_ORIGINS = [
+ #   f"https://{host}"
+  #  for host in ALLOWED_HOSTS
+   # if host not in ('127.0.0.1', 'localhost')
+#]
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}"
-    for host in ALLOWED_HOSTS
-    if host not in ('127.0.0.1', 'localhost')
+    "https://ma-classe-pro.onrender.com",
 ]
 
 
