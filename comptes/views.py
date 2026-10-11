@@ -217,8 +217,47 @@ def tableau_bord_view(request):
         statut='PUBLIEE',
     ).count()
 
+    # ---------- Suivi des leçons : dispensées / prévues ----------
+    # Une leçon = une fiche de préparation. Elle est "prévue" si elle a
+    # une date prévue dans la période, "dispensée" si son statut est
+    # DISPENSEE (bouton "Marquer dispensée" du tableau de bord).
+    from django.utils.formats import date_format
+    from pedagogie.periodes import NOMS_TRIMESTRES, bornes_du_mois, trimestre_courant
+
+    aujourdhui = timezone.localdate()
+    numero_trimestre, debut_trimestre, fin_trimestre = trimestre_courant(aujourdhui)
+    debut_mois, fin_mois = bornes_du_mois(aujourdhui)
+
+    def compter(debut, fin, titre):
+        bilan = FichePreparation.objects.filter(
+            enseignant=enseignant, date_prevue__range=(debut, fin)
+        ).aggregate(
+            prevues=Count('id'),
+            dispensees=Count('id', filter=Q(statut='DISPENSEE')),
+        )
+        bilan['titre'] = titre
+        bilan['pct'] = round(100 * bilan['dispensees'] / bilan['prevues']) if bilan['prevues'] else 0
+        return bilan
+
+    suivi_lecons = [
+        compter(debut_mois, fin_mois, f"Ce mois ({date_format(aujourdhui, 'F Y')})"),
+        compter(debut_trimestre, fin_trimestre, f"Ce trimestre ({NOMS_TRIMESTRES[numero_trimestre]})"),
+    ]
+
+    # Leçons dont la date est arrivée (ou passée, dans ce trimestre) sans
+    # avoir été marquées dispensées : c'est à l'enseignant de confirmer.
+    lecons_a_valider = FichePreparation.objects.filter(
+        enseignant=enseignant,
+        date_prevue__gte=debut_trimestre,
+        date_prevue__lte=aujourdhui,
+    ).exclude(statut='DISPENSEE').select_related(
+        'classe_matiere__classe', 'classe_matiere__matiere'
+    ).order_by('date_prevue')[:8]
+
     return render(request, 'comptes/tableau_bord.html', {
         'classes': classes,
+        'suivi_lecons': suivi_lecons,
+        'lecons_a_valider': lecons_a_valider,
         'prochaines_fiches': prochaines_fiches,
         'nb_classes': len(classes),
         'nb_eleves': nb_garcons + nb_filles,
@@ -228,6 +267,3 @@ def tableau_bord_view(request):
         'nb_fiches_a_venir': nb_fiches_a_venir,
         'nb_evaluations_en_ligne': nb_evaluations_en_ligne,
     })
-
-def accueil_view(request):
-    return render(request, 'comptes/accueil.html')

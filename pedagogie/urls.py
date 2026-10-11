@@ -10,6 +10,7 @@ app_name = 'pedagogie'
 
 urlpatterns = [
     path('mes-fiches/', views.mes_fiches_view, name='mes_fiches'),
+    path('<int:fiche_id>/dispensee/', views.marquer_dispensee_view, name='marquer_dispensee'),
     path('nouvelle-fiche/', views.choisir_matiere_view, name='choisir_matiere'),
     path(
         'classe-matiere/<int:classe_matiere_id>/',

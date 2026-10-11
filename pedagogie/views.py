@@ -14,6 +14,8 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.forms import inlineformset_factory
 from django.db.models import F
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from django.db.models import Q
 
@@ -229,6 +231,37 @@ def detail_fiche_view(request, fiche_id):
         'fiche': fiche,
         'etapes': etapes,
     })
+
+
+@login_required
+@require_POST
+def marquer_dispensee_view(request, fiche_id):
+    """
+    Marque une leçon comme dispensée (cours effectivement donné).
+    C'est ce statut qui alimente les compteurs "dispensées sur prévues"
+    du tableau de bord (mois et trimestre).
+    """
+    enseignant = obtenir_enseignant_ou_403(request)
+    fiche = get_object_or_404(FichePreparation, id=fiche_id)
+
+    if not enseignant_a_acces_classe_matiere(enseignant, fiche.classe_matiere):
+        raise PermissionDenied("Vous n'enseignez pas cette matière dans cette classe.")
+
+    fiche.statut = 'DISPENSEE'
+    fiche.save(update_fields=['statut', 'date_modification'])
+    # date_modification doit figurer dans update_fields : avec auto_now,
+    # Django ne la met à jour que si on la liste explicitement ici.
+    messages.success(request, f"« {fiche.titre} » est marquée comme dispensée.")
+
+    # Retour à la page d'où vient l'action. On vérifie que l'adresse
+    # appartient bien à ce site : sans ça, un formulaire piégé pourrait
+    # renvoyer l'enseignant vers un site extérieur (redirection ouverte).
+    suivant = request.POST.get('suivant', '')
+    if not url_has_allowed_host_and_scheme(
+        suivant, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        suivant = reverse('comptes:tableau_bord')
+    return redirect(suivant)
 
 
 @login_required

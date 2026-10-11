@@ -37,6 +37,70 @@
         {% endif %}
     </section>
 
+    {# ---------- Suivi des leçons : dispensées sur prévues ---------- #}
+    <div class="section-entete">
+        <h2>Suivi des leçons</h2>
+        <a href="{% url 'pedagogie:choisir_matiere' %}" class="bouton bouton-petit">+ Prévoir une leçon</a>
+    </div>
+    <section class="suivi" aria-label="Leçons dispensées et prévues">
+        {% for ligne in suivi_lecons %}
+            <div class="suivi-ligne">
+                <div class="suivi-entete">
+                    <span class="suivi-titre">{{ ligne.titre }}</span>
+                    <span class="suivi-chiffres">
+                        <strong>{{ ligne.dispensees }}</strong>
+                        dispensée{% if ligne.dispensees > 1 %}s{% endif %}
+                        sur {{ ligne.prevues }} prévue{% if ligne.prevues > 1 %}s{% endif %}
+                    </span>
+                </div>
+                <div class="barre" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                     aria-valuenow="{{ ligne.pct }}" aria-label="{{ ligne.titre }}">
+                    <span style="width: {{ ligne.pct }}%"></span>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+
+    {% if lecons_a_valider %}
+        <div class="section-entete">
+            <h2>Leçons à valider</h2>
+        </div>
+        <p class="liste-classes-meta">
+            Leçons dont la date est arrivée et qui ne sont pas encore marquées comme dispensées.
+        </p>
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Classe</th>
+                    <th>Matière</th>
+                    <th>Titre</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fiche in lecons_a_valider %}
+                    <tr>
+                        <td data-label="Date">{{ fiche.date_prevue|date:"d/m/Y" }}</td>
+                        <td data-label="Classe">{{ fiche.classe_matiere.classe.nom }}</td>
+                        <td data-label="Matière">{{ fiche.classe_matiere.matiere.nom }}</td>
+                        <td data-label="Titre">{{ fiche.titre }}</td>
+                        <td class="cellule-actions">
+                            <div class="groupe-actions">
+                                <a href="{% url 'pedagogie:detail_fiche' fiche.id %}" class="bouton-secondaire bouton-petit">Voir</a>
+                                <form method="post" action="{% url 'pedagogie:marquer_dispensee' fiche.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="suivant" value="{{ request.path }}">
+                                    <button type="submit" class="bouton-succes bouton-petit">Marquer dispensée</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
     {# ---------- Mes classes, avec l'effectif garçons / filles ---------- #}
     <div class="section-entete">
         <h2>Mes classes</h2>
@@ -89,13 +153,10 @@
         </div>
     {% endif %}
 
-    {# ---------- Prochaines fiches de préparation ---------- #}
+    {# ---------- Leçons prévues à venir ---------- #}
     <div class="section-entete">
-        <h2>Prochaines fiches</h2>
-        <div class="groupe-actions">
-            <a href="{% url 'pedagogie:choisir_matiere' %}" class="bouton bouton-petit">+ Nouvelle fiche</a>
-            <a href="{% url 'pedagogie:mes_fiches' %}" class="bouton-secondaire bouton-petit">Toutes mes fiches</a>
-        </div>
+        <h2>Leçons prévues</h2>
+        <a href="{% url 'pedagogie:mes_fiches' %}" class="bouton-secondaire bouton-petit">Toutes mes fiches</a>
     </div>
 
     {% if prochaines_fiches %}
@@ -124,7 +185,7 @@
             </tbody>
         </table>
     {% else %}
-        <div class="vide"><p>Aucune fiche à venir pour le moment.</p></div>
+        <div class="vide"><p>Aucune leçon prévue pour le moment. Utilise « + Prévoir une leçon » pour en planifier une.</p></div>
     {% endif %}
 </div>
 {% endblock %}

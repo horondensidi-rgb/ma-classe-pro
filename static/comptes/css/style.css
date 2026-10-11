@@ -2,8 +2,6 @@
    TeachMali : feuille de style principale
    Fichier : static/comptes/css/style.css
 
-   NNNNNNNN
-   
    Principes (à garder en tête si tu modifies ce fichier) :
    - Palette tirée du logo : nuit (encre du cahier), soleil (surligneur),
      feuille (validation). Le jaune n'est JAMAIS utilisé comme couleur
@@ -1006,3 +1004,29 @@ img { max-width: 100%; }
     .tableau tfoot tr { background: #F8FAFC; }
     .tableau tfoot td { background: none; border-top: 0; }
 }
+
+/* ============================================================
+   SUIVI DES LEÇONS (tableau de bord) : dispensées sur prévues
+   ============================================================ */
+.suivi {
+    margin: 0.75rem 0 2rem;
+    padding: 0 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--trait);
+    border-radius: var(--rayon-panneau);
+}
+.suivi-ligne { padding: 1rem 0; border-bottom: 1px solid var(--trait); }
+.suivi-ligne:last-child { border-bottom: 0; }
+.suivi-entete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.15rem 1rem;
+    margin-bottom: 0.6rem;
+}
+.suivi-titre { color: var(--nuit); font-weight: 700; }
+.suivi-chiffres { color: var(--encre-douce); }
+.suivi-chiffres strong { color: var(--nuit); font-size: 1.3rem; }
+.barre { height: 0.55rem; background: var(--nuit-pale); border-radius: var(--rayon-pastille); overflow: hidden; }
+.barre > span { display: block; height: 100%; background: var(--feuille); border-radius: inherit; }
