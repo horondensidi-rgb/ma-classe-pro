@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block titre %}{{ classe.nom }} — TeachMali {% endblock %}
+{% block titre %}{{ classe.nom }} — Ma Classe Pro{% endblock %}
 
 {% block contenu %}
 <div class="contenu">
     <h2>{{ classe.nom }}</h2>
     <p class="liste-classes-meta">
-        {{ classe.get_niveau_display }} · {{ classe.annee_scolaire.libelle }}
+        {{ classe.etablissement.nom }} · {{ classe.get_niveau_display }} · {{ classe.annee_scolaire.libelle }}
     </p>
 
     <h3>Matières enseignées</h3>

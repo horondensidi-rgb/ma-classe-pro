@@ -5,7 +5,7 @@
 {% block contenu %}
 <div class="contenu">
     <h2>Bonjour, {{ eleve.prenom }}</h2>
-    <p class="liste-classes-meta">{{ eleve.classe.nom }}</p>
+    <p class="liste-classes-meta">{{ eleve.classe.nom }}, {{ eleve.classe.etablissement.nom }}</p>
 
     {% if lignes %}
         <table class="tableau">

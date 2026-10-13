@@ -19,6 +19,8 @@
     {# user.profil_eleve / user.profil_enseignant : si la relation n'existe #}
     {# pas, le template renvoie "faux" au lieu de planter. #}
 
+    {# Nom de l'école : celle de l'enseignant, ou celle de la classe de l'élève #}
+    {% firstof user.profil_enseignant.etablissement.nom user.profil_eleve.classe.etablissement.nom as nom_ecole %}
     <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 
     <div class="app-shell">
@@ -28,6 +30,7 @@
             <a class="sidebar-marque" href="{{ url_accueil }}">
                 <img class="sidebar-logo" src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" width="168" height="45">
             </a>
+            {% if nom_ecole %}<p class="sidebar-ecole" title="{{ nom_ecole }}">{{ nom_ecole }}</p>{% endif %}
 
             <nav class="sidebar-nav">
                 {% if user.profil_eleve %}
@@ -96,6 +99,7 @@
                 <a class="topbar-marque" href="{{ url_accueil }}">
                     <img class="topbar-logo" src="{% static 'comptes/img/logo_tm.png' %}" alt="TeachMali" width="120" height="32">
                 </a>
+                {% if nom_ecole %}<span class="topbar-ecole">{{ nom_ecole }}</span>{% endif %}
             </header>
 
             <main class="app-contenu" id="contenu">

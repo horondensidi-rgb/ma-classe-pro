@@ -147,7 +147,7 @@ def tableau_bord_view(request):
     classes = list(
         Classe.objects.filter(
             Q(enseignant_principal=enseignant) | Q(classematiere__enseignant=enseignant)
-        ).distinct().select_related('annee_scolaire')
+        ).distinct().select_related('annee_scolaire', 'etablissement')
     )
 
     # Effectif actif de chaque classe, séparé garçons / filles, en UNE
@@ -267,7 +267,3 @@ def tableau_bord_view(request):
         'nb_fiches_a_venir': nb_fiches_a_venir,
         'nb_evaluations_en_ligne': nb_evaluations_en_ligne,
     })
-
-
-def accueil_view(request):
-    return render(request, 'comptes/accueil.html')

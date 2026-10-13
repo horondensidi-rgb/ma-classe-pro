@@ -1030,3 +1030,37 @@ img { max-width: 100%; }
 .suivi-chiffres strong { color: var(--nuit); font-size: 1.3rem; }
 .barre { height: 0.55rem; background: var(--nuit-pale); border-radius: var(--rayon-pastille); overflow: hidden; }
 .barre > span { display: block; height: 100%; background: var(--feuille); border-radius: inherit; }
+
+/* ============================================================
+   NOM DE L'ÉCOLE
+   ============================================================ */
+.sidebar-ecole {
+    margin: 0;
+    padding: 0 1.25rem 0.9rem;
+    color: var(--encre-douce);
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.topbar-ecole {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-left: auto;
+    padding-right: 0.75rem;
+    color: var(--encre-douce);
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.25;
+    text-align: right;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.jour-ecole { margin: 0 0 0.15rem; color: #fff; font-weight: 500; }
+.cellule-bloc { display: block; }
+.cellule-bloc small { display: block; color: var(--encre-douce); font-size: 0.78rem; font-weight: 400; }

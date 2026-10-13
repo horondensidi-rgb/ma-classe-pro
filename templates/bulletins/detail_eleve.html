@@ -10,7 +10,7 @@
 
     <h2>{{ eleve.nom_complet }}</h2>
     <p class="liste-classes-meta">
-        {{ classe.nom }} · {{ trimestre_libelle }} · {{ classe.annee_scolaire.libelle }}
+        {{ classe.etablissement.nom }} · {{ classe.nom }} · {{ trimestre_libelle }} · {{ classe.annee_scolaire.libelle }}
     </p>
 
     <a href="{% url 'bulletins:telecharger_pdf' classe.id eleve.id bulletin.trimestre %}" class="bouton">

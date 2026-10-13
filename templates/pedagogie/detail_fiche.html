@@ -16,6 +16,9 @@
     </div>
 
     <dl class="fiche-info">
+        <dt>Établissement</dt>
+        <dd>{{ fiche.classe_matiere.classe.etablissement.nom }}</dd>
+
         <dt>Discipline</dt>
         <dd>{{ fiche.classe_matiere.matiere.nom }} — {{ fiche.get_type_lecon_display }}</dd>
 
