@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block titre %}Connexion — TeachMali {% endblock %}
+{% block titre %}Connexion — Ma Classe Pro{% endblock %}
 
 {% block contenu %}
 <div class="ecran-auth">
@@ -8,7 +8,7 @@
     <div class="ecran-auth-panneau">
         <h1>Préparez vos cours. Suivez vos classes. Gagnez du temps.</h1>
         <p>
-            TeachMali accompagne les enseignants maliens dans la
+            Ma Classe Pro accompagne les enseignants maliens dans la
             préparation des fiches, la gestion des évaluations et
             l'édition des bulletins, selon la méthodologie officielle.
         </p>
@@ -30,7 +30,7 @@
             {% endif %}
 
             <div class="champ">
-                <label for="{{ form.username.id_for_label }}">Nom d'utilisateur</label>
+                <label for="{{ form.username.id_for_label }}">Adresse e-mail ou identifiant</label>
                 {{ form.username }}
             </div>
 
@@ -57,4 +57,3 @@
 
 </div>
 {% endblock %}
-

@@ -42,7 +42,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY') or (
 # pages d'erreur détaillées de Django pendant le développement, crée
 # un fichier .env contenant la ligne : DEBUG=True
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-#DEBUG = True
+
 # ALLOWED_HOSTS : liste séparée par des virgules dans la variable
 # d'environnement, ex: "monecole.onrender.com,monecole.ml"
 # Les valeurs de secours couvrent le développement local (Termux,
@@ -64,13 +64,10 @@ if os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
 # de formulaire échoue avec "Forbidden (403) CSRF verification
 # failed" — la page de connexion s'affiche, mais impossible de
 # jamais se connecter.
-#CSRF_TRUSTED_ORIGINS = [
- #   f"https://{host}"
-  #  for host in ALLOWED_HOSTS
-   # if host not in ('127.0.0.1', 'localhost')
-#]
 CSRF_TRUSTED_ORIGINS = [
-    "https://ma-classe-pro.onrender.com",
+    f"https://{host}"
+    for host in ALLOWED_HOSTS
+    if host not in ('127.0.0.1', 'localhost')
 ]
 
 
@@ -180,6 +177,9 @@ STORAGES = {
 }
 
 
+# Connexion par e-mail OU identifiant (voir comptes/backends.py)
+AUTHENTICATION_BACKENDS = ['comptes.backends.IdentifiantOuEmailBackend']
+
 LOGIN_URL = 'comptes:connexion'
 LOGIN_REDIRECT_URL = 'comptes:tableau_bord'
 LOGOUT_REDIRECT_URL = 'comptes:connexion'
@@ -232,34 +232,24 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# JOURNALISATION TEMPORAIRE POUR DIAGNOSTIQUER LES ERREURS 500
 
+# ------------------------------------------------------------
+# Journaux : par défaut, avec DEBUG=False, Django n'affiche AUCUNE trace
+# d'erreur dans la console (donc rien dans l'onglet Logs de Render,
+# juste "500"). Ce réglage envoie les erreurs de requêtes (avec leur
+# trace complète) vers la sortie standard, que Render capture.
+# ------------------------------------------------------------
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-
-    "formatters": {
-        "detailed": {
-            "format": (
-                "{levelname} {asctime} {name} "
-                "{message}"
-            ),
-            "style": "{",
-        },
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
     },
-
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "detailed",
-        },
-    },
-
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": True,
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
         },
     },
 }
