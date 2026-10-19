@@ -10,6 +10,7 @@ app_name = 'classes'
 
 urlpatterns = [
     path('', views.liste_classes_view, name='liste_classes'),
+    path('emploi-du-temps/', views.mon_emploi_du_temps_view, name='mon_emploi_du_temps'),
     path('<int:classe_id>/', views.detail_classe_view, name='detail_classe'),
     path('<int:classe_id>/ajouter-eleve/', views.ajouter_eleve_view, name='ajouter_eleve'),
     path('<int:classe_id>/eleves/<int:eleve_id>/', views.fiche_eleve_view, name='fiche_eleve'),

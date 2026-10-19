@@ -482,3 +482,59 @@ def supprimer_creneau_view(request, classe_id, creneau_id):
     messages.success(request, "Créneau supprimé.")
 
     return redirect('classes:emploi_du_temps', classe_id=classe.id)
+
+
+@login_required
+def mon_emploi_du_temps_view(request):
+    """
+    Emploi du temps personnel de l'enseignant : TOUS ses cours, dans
+    toutes ses classes et tous ses établissements, rassemblés dans une
+    seule grille (lignes = horaires, colonnes = jours de la semaine).
+
+    On ne montre que SES créneaux (ceux où il est l'enseignant de la
+    matière), pas ceux de ses collègues dans les mêmes classes. Un
+    enseignant ne peut pas avoir deux cours qui se chevauchent
+    (voir Creneau.clean), donc chaque ligne horaire est cohérente.
+    """
+    from django.utils import timezone
+
+    enseignant = obtenir_enseignant_ou_403(request)
+
+    creneaux = list(
+        Creneau.objects.filter(classe_matiere__enseignant=enseignant)
+        .select_related('classe_matiere__matiere', 'classe_matiere__classe__etablissement')
+        .order_by('heure_debut', 'heure_fin')
+    )
+
+    codes_jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
+    jour_actuel = codes_jours[timezone.localtime().weekday()]
+
+    colonnes = [
+        {'code': code, 'libelle': libelle, 'aujourdhui': code == jour_actuel}
+        for code, libelle in Creneau.JOUR_CHOICES
+    ]
+
+    # Une ligne par plage horaire distincte, triée de la plus tôt à la plus tard
+    plages = sorted({(c.heure_debut, c.heure_fin) for c in creneaux})
+    grille = []
+    for debut, fin in plages:
+        cellules = []
+        for colonne in colonnes:
+            cellules.append({
+                'aujourdhui': colonne['aujourdhui'],
+                'cours': [
+                    c for c in creneaux
+                    if c.jour_semaine == colonne['code']
+                    and c.heure_debut == debut and c.heure_fin == fin
+                ],
+            })
+        grille.append({'debut': debut, 'fin': fin, 'cellules': cellules})
+
+    ecoles = sorted({c.classe_matiere.classe.etablissement.nom for c in creneaux})
+
+    return render(request, 'classes/mon_emploi_du_temps.html', {
+        'colonnes': colonnes,
+        'grille': grille,
+        'ecoles': ecoles,
+        'nb_creneaux': len(creneaux),
+    })

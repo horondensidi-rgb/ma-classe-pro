@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block titre %}Emploi du temps — TeachMali{% endblock %}
+
+{% block contenu %}
+<div class="contenu">
+    <h2>Mon emploi du temps</h2>
+
+    {% if grille %}
+        <p class="liste-classes-meta">
+            Tous vos cours, classes et établissements confondus.
+            {% if ecoles|length > 1 %}
+pppppppp
+                Vous intervenez dans {{ ecoles|length }} établissements : {{ ecoles|join:", " }}.
+            {% endif %}
+        </p>
+
+        <div class="edt-defile" tabindex="0" role="region" aria-label="Emploi du temps de la semaine">
+            <table class="edt">
+                <thead>
+                    <tr>
+                        <th scope="col" class="edt-heure">Horaires</th>
+                        {% for colonne in colonnes %}
+                            <th scope="col"{% if colonne.aujourdhui %} class="edt-aujourdhui"{% endif %}>{{ colonne.libelle }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ligne in grille %}
+                        <tr>
+                            <th scope="row" class="edt-heure">
+                                {{ ligne.debut|time:"H:i" }}
+                                <small>{{ ligne.fin|time:"H:i" }}</small>
+                            </th>
+                            {% for cellule in ligne.cellules %}
+                                <td{% if cellule.aujourdhui %} class="edt-aujourdhui"{% endif %}>
+                                    {% for cours in cellule.cours %}
+                                        <span class="edt-cours">
+                                            <strong>{{ cours.classe_matiere.classe.nom }}</strong>
+                                            <span>{{ cours.classe_matiere.matiere.nom }}</span>
+                                            <small>{{ cours.classe_matiere.classe.etablissement.nom }}</small>
+                                            {% if cours.salle %}<small>Salle {{ cours.salle }}</small>{% endif %}
+                                        </span>
+                                    {% endfor %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p class="liste-classes-meta">
+            Pour ajouter ou modifier un créneau, ouvrez la classe concernée puis « Emploi du temps ».
+        </p>
+    {% else %}
+        <div class="vide">
+            <p>
+                Aucun créneau enregistré pour le moment. L'emploi du temps se renseigne
+                depuis la page de chaque classe.
+                <a href="{% url 'classes:liste_classes' %}">Voir mes classes</a>
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

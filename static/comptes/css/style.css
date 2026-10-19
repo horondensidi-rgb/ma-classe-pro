@@ -1064,3 +1064,70 @@ img { max-width: 100%; }
 .jour-ecole { margin: 0 0 0.15rem; color: #fff; font-weight: 500; }
 .cellule-bloc { display: block; }
 .cellule-bloc small { display: block; color: var(--encre-douce); font-size: 0.78rem; font-weight: 400; }
+
+/* ============================================================
+   EMPLOI DU TEMPS HEBDOMADAIRE (grille horaires x jours)
+   Sur téléphone la grille défile horizontalement, la colonne des
+   horaires restant fixe à gauche.
+   ============================================================ */
+.edt-defile {
+    margin: 1rem 0;
+    overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--trait);
+    border-radius: var(--rayon-panneau);
+}
+.edt { width: 100%; min-width: 56rem; border-collapse: separate; border-spacing: 0; }
+.edt th, .edt td {
+    padding: 0.55rem 0.6rem;
+    border-right: 1px solid var(--trait);
+    border-bottom: 1px solid var(--trait);
+    vertical-align: top;
+    text-align: left;
+}
+.edt th:last-child, .edt td:last-child { border-right: 0; }
+.edt tbody tr:last-child th, .edt tbody tr:last-child td { border-bottom: 0; }
+.edt thead th {
+    background: #F8FAFC;
+    color: var(--encre-douce);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.edt thead th.edt-aujourdhui {
+    background: var(--soleil-pale);
+    color: var(--nuit);
+    font-weight: 700;
+    box-shadow: inset 0 -3px 0 var(--soleil);
+}
+.edt td.edt-aujourdhui { background: #FFFCEF; }
+.edt .edt-heure {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    width: 5.5rem;
+    background: var(--surface);
+    color: var(--nuit);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.edt thead .edt-heure { background: #F8FAFC; color: var(--encre-douce); font-weight: 500; }
+.edt .edt-heure small { display: block; color: var(--encre-douce); font-size: 0.8rem; font-weight: 400; }
+
+.edt-cours {
+    display: block;
+    margin-bottom: 0.4rem;
+    padding: 0.45rem 0.6rem;
+    background: var(--nuit-pale);
+    border-radius: 8px;
+}
+.edt-cours:last-child { margin-bottom: 0; }
+.edt-cours strong { display: block; color: var(--nuit); line-height: 1.3; }
+.edt-cours span, .edt-cours small { display: block; color: var(--encre-douce); font-size: 0.78rem; line-height: 1.35; }
+
+.bottomnav-lien span { text-align: center; line-height: 1.1; }
+
+@media print {
+    .edt-defile { overflow: visible; border-color: #999; }
+    .edt { min-width: 0; font-size: 0.75rem; }
+}
