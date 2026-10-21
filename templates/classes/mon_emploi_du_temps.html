@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block titre %}Emploi du temps — TeachMali{% endblock %}
@@ -10,8 +11,7 @@
         <p class="liste-classes-meta">
             Tous vos cours, classes et établissements confondus.
             {% if ecoles|length > 1 %}
-pppppppp
-                Vous intervenez dans {{ ecoles|length }} établissements : {{ ecoles|join:", " }}.
+                Vous intervenez dans {{ ecoles|length }} établissements : <strong>{{ ecoles|join:", " }}</strong>.
             {% endif %}
         </p>
 
